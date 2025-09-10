@@ -11,7 +11,7 @@ let
       ./safety-reboot.nix
       self.inputs.nixos-images.nixosModules.kexec-installer
       self.inputs.nixos-images.nixosModules.noninteractive
-      { system.kexec-installer.name = "nixos-kexec-instalelr-noninteractive"; }
+      { system.kexec-installer.name = "nixos-kexec-installer-noninteractive"; }
     ];
     _module.args.inputs = self.inputs;
   };

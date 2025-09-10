@@ -253,6 +253,7 @@ def generate_wireguard_key(c: Any, hostname: str) -> None:
 
         for key, value in keys.items():
             c.run(f"sops --set '[\"{key}\"] {json.dumps(value)}' {ROOT}/hosts/{hostname}.yaml")
+            c.run(f"echo {value} > {ROOT}/modules/wireguard/keys/{hostname}")
 
 
 @task
