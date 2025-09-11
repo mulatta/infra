@@ -25,7 +25,7 @@ with lib;
     # we only manage our in-house instances
     # provisioned instances are managed by provider
     systemd.network.networks."10-ethernet" = optionals (cfg.location != "terraform") {
-      matchConfig.Type = "ether";
+      matchConfig.MACAddress = cfg.mac;
       address = [ "${cfg.ipv4}/24" ];
       routes = [ { Gateway = "${cfg.gateway}"; } ];
       dns = [

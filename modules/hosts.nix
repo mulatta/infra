@@ -21,6 +21,14 @@ let
       '';
     };
 
+    wg0 = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = ''
+        Wireguard interface 0 (wg0) address
+      '';
+    };
+
     gateway = mkOption {
       type = types.nullOr types.str;
       default = null;
@@ -47,6 +55,9 @@ let
   };
 in
 {
+  imports = [
+    ./wireguard
+  ];
   options = with lib; {
     networking.sbee.hosts = mkOption {
       type = with types; attrsOf (submodule [ { options = hostOptions; } ]);
@@ -71,26 +82,23 @@ in
       psi = {
         ipv4 = "117.16.251.37";
         mac = "bc:fc:e7:52:e1:ab";
+        wg0 = "10.100.0.1";
         gateway = "117.16.251.254";
         location = "IDC";
       };
       rho = {
         ipv4 = "10.80.169.39";
         mac = "9c:6b:00:9e:fa:de";
+        wg0 = "10.100.0.2";
         gateway = "10.80.169.254";
         location = "office";
       };
       tau = {
         ipv4 = "10.80.169.40";
-        mac = "";
+        mac = "9c:6b:00:9e:f8:ef";
+        wg0 = "10.100.0.3";
         gateway = "10.80.169.254";
         location = "office";
-      };
-      eta = {
-        ipv4 = "158.247.197.232";
-        mac = "";
-        gateway = "10.80.169.254";
-        location = "terraform";
       };
     };
   };

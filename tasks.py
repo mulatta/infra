@@ -288,6 +288,39 @@ def decrypt_host_keys(c: Any, host: str, tmpdir: str) -> None:
 
 
 @task
+def wake(c: Any, host: str) -> None:
+    """
+    Wake up a remote host using Wake-on-LAN, i.e, inv wake --host rho
+    """
+    print(f"Waking up {host}...")
+    print(f"Getting MAC address for {host}...")
+
+    try:
+        mac_result = c.run(
+            f"nix eval {ROOT}#nixosConfigurations.{host}.config.networking.sbee.currentHost.mac --raw",
+            hide=True,
+        )
+
+        mac_address = mac_result.stdout.strip()
+
+        if not mac_address or mac_address == "null":
+            print(f"Error: No MAC address configured for {host}")
+            print(f"Please add MAC address to hosts/{host}.nix for wake-on-lan")
+            return
+
+        print(f"MAC address: {mac_address}")
+        print("Sending Wake-on-LAN magic packet...")
+
+        c.run(f"nix run nixpkgs#wakeonlan -- {mac_address}", echo=True)
+        print(f"Magic packet sent to {host}!")
+
+    except Exception as e:
+        print(f"Error: {e}")
+        if "nixosConfigurations" in str(e):
+            print(f"Make sure {host} is defined in your flake configuration")
+
+
+@task
 def add_server(c: Any, hostname: str) -> None:
     """
     Generate new server keys and configurations for a given hostname and hardware config

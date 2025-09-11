@@ -4,6 +4,7 @@
     ../modules/disko-zfs.nix
     ../modules/disko-zfs-storage.nix
     ../modules/minio
+    ../modules/wake-on-lan.nix
   ];
 
   disko.rootDisk = "/dev/disk/by-id/nvme-eui.00000000000000006479a79cdac0038a";

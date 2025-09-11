@@ -3,7 +3,6 @@
   environment.systemPackages = with pkgs; [
     ipmitool
     nvme-cli
-    ethtool
     pciutils
     python3
     git
@@ -14,9 +13,5 @@
     openssl
     jq
     rsync
-    (neovim.override {
-      vimAlias = true;
-      withRuby = false;
-    })
   ];
 }
