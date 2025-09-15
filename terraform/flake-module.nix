@@ -19,6 +19,9 @@
           p.github
           p.vultr
           p.sops
+          p.null
+          p.external
+          p.local
         ]);
         terraform-validate =
           pkgs.runCommand "terraform-validate"

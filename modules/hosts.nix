@@ -21,6 +21,14 @@ let
       '';
     };
 
+    dns = mkOption {
+      type = types.listOf types.str;
+      default = null;
+      description = ''
+        Nameserver
+      '';
+    };
+
     wg0 = mkOption {
       type = types.nullOr types.str;
       default = null;
@@ -40,19 +48,24 @@ let
     location = mkOption {
       type = types.enum [
         "IDC"
-        "office"
-        "terraform"
+        "LAB"
+        "VPS"
       ];
       default = null;
       description = ''
         Physical location of this host
 
         IDC: INU datacenter
-        office: SBEE lab office
+        LAB: SBEE lab office
         terraform: provisioned cloud instance
       '';
     };
   };
+
+  dns = [
+    "117.16.191.6"
+    "168.126.63.1"
+  ];
 in
 {
   imports = [
@@ -80,6 +93,7 @@ in
 
     networking.sbee.hosts = {
       psi = {
+        inherit dns;
         ipv4 = "117.16.251.37";
         mac = "bc:fc:e7:52:e1:ab";
         wg0 = "10.100.0.1";
@@ -87,18 +101,28 @@ in
         location = "IDC";
       };
       rho = {
+        inherit dns;
         ipv4 = "10.80.169.39";
         mac = "9c:6b:00:9e:fa:de";
         wg0 = "10.100.0.2";
         gateway = "10.80.169.254";
-        location = "office";
+        location = "LAB";
       };
       tau = {
+        inherit dns;
         ipv4 = "10.80.169.40";
         mac = "9c:6b:00:9e:f8:ef";
         wg0 = "10.100.0.3";
         gateway = "10.80.169.254";
-        location = "office";
+        location = "LAB";
+      };
+      eta = {
+        ipv4 = "158.247.240.214";
+        mac = "56:00:05:a2:33:73";
+        dns = [ "127.0.0.53" ];
+        wg0 = "10.100.0.4";
+        gateway = "158.247.240.1";
+        location = "VPS";
       };
     };
   };

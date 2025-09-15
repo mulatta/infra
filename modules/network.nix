@@ -24,14 +24,11 @@ with lib;
 
     # we only manage our in-house instances
     # provisioned instances are managed by provider
-    systemd.network.networks."10-ethernet" = optionals (cfg.location != "terraform") {
+    systemd.network.networks."10-ethernet" = {
       matchConfig.MACAddress = cfg.mac;
       address = [ "${cfg.ipv4}/24" ];
       routes = [ { Gateway = "${cfg.gateway}"; } ];
-      dns = [
-        "117.16.191.6"
-        "168.126.63.1"
-      ];
+      inherit (cfg) dns;
     };
   };
 }

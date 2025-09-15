@@ -47,7 +47,6 @@ let
 
     ./modules/users
     ./modules/bootloader.nix
-    srvos.nixosModules.mixins-latest-zfs-kernel
     sops-nix.nixosModules.sops
     (
       {
@@ -86,6 +85,10 @@ in
     tau = nixosSystem {
       pkgs = pkgs-x86_64-linux;
       modules = commonModules ++ [ ./hosts/tau.nix ];
+    };
+    eta = nixosSystem {
+      pkgs = pkgs-x86_64-linux;
+      modules = commonModules ++ [ ./hosts/eta.nix ];
     };
   };
 }
