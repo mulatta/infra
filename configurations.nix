@@ -33,7 +33,6 @@ let
     ./modules/nix-daemon.nix
     ./modules/hosts.nix
     ./modules/cleanup-usr.nix
-    ./modules/disko-zfs.nix
     ./modules/sshd
     ./modules/network.nix
     ./modules/packages.nix

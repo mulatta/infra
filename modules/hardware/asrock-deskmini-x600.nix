@@ -10,7 +10,6 @@
 {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
-    ../disko-zfs.nix
   ];
 
   boot.initrd.availableKernelModules = [

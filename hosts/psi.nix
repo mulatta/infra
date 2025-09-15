@@ -1,6 +1,6 @@
 {
   imports = [
-    ../modules/disko-zfs.nix
+    ../modules/disko/zfs-root.nix
     ../modules/xrdp.nix
     ../modules/nvidia.nix
   ];

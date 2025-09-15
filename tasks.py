@@ -129,7 +129,7 @@ def install(c: Any, machine: str, hostname: str, extra_args: str = "") -> None:
     with TemporaryDirectory() as tmpdir:
         decrypt_host_keys(c, machine, tmpdir)
         c.run(
-            f"nix run github:nix-community/nixos-anywhere#nixos-anywhere -- --flake .#{machine} {extra_args} --extra-files {tmpdir} {hostname}",
+            f"nix run github:nix-community/nixos-anywhere#nixos-anywhere -- --flake .#{machine} {extra_args} --build-on remote --extra-files {tmpdir} {hostname}",
             echo=True,
         )
 
