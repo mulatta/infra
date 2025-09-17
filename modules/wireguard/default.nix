@@ -10,54 +10,40 @@ let
   others = lib.filterAttrs (name: _: name != config.networking.hostName) all;
 
   mkWireguardNetwork =
-    {
-      name,
-      port,
-      ipField,
-      subnet ? "/24",
-    }:
+    interface: port:
     let
       mkPeers = lib.mapAttrsToList (hostName: host: {
-        PublicKey = builtins.readFile (./keys + "/${hostName}_${name}");
+        PublicKey = builtins.readFile (./keys + "/${hostName}_${interface}");
         Endpoint = "${host.ipv4}:${builtins.toString port}";
-        AllowedIPs = [ "${host.${ipField}}/32" ];
+        AllowedIPs = [ "${host.${interface}}/32" ];
         PersistentKeepalive = 25;
       }) others;
     in
     {
       netdev = {
         netdevConfig = {
-          Name = name;
+          Name = interface;
           Kind = "wireguard";
         };
         wireguardConfig = {
-          PrivateKeyFile = config.sops.secrets."${name}-key".path;
+          PrivateKeyFile = config.sops.secrets."${interface}-key".path;
           ListenPort = port;
         };
         wireguardPeers = mkPeers;
       };
 
       network = {
-        matchConfig.Name = name;
-        address = [ "${cfg.${ipField}}${subnet}" ];
+        matchConfig.Name = interface;
+        address = [ "${cfg.${interface}}/24" ];
       };
 
       firewallPort = port;
-      secretName = "${name}-key";
+      secretName = "${interface}-key";
     };
 
   networks = {
-    wg-mgnt = mkWireguardNetwork {
-      name = "wg-mgnt";
-      port = 51820;
-      ipField = "wg-mgnt";
-    };
-
-    wg-serv = mkWireguardNetwork {
-      name = "wg-serv";
-      port = 51821;
-      ipField = "wg-serv";
-    };
+    wg-mgnt = mkWireguardNetwork "wg-mgnt" 51820;
+    wg-serv = mkWireguardNetwork "wg-serv" 51821;
   };
 in
 {

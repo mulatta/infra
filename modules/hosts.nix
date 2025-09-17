@@ -100,33 +100,6 @@ in
         "Please add network configuration for ${config.networking.hostName}. None found in ${./hosts.nix}";
 
     networking.sbee.hosts = {
-      psi = {
-        inherit dns;
-        ipv4 = "117.16.251.37";
-        mac = "bc:fc:e7:52:e1:ab";
-        wg-mgnt = "10.100.0.1";
-        wg-serv = "10.200.0.1";
-        gateway = "117.16.251.254";
-        location = "IDC";
-      };
-      rho = {
-        inherit dns;
-        ipv4 = "10.80.169.39";
-        mac = "9c:6b:00:9e:fa:de";
-        wg-mgnt = "10.100.0.2";
-        wg-serv = "10.200.0.2";
-        gateway = "10.80.169.254";
-        location = "LAB";
-      };
-      tau = {
-        inherit dns;
-        ipv4 = "10.80.169.40";
-        mac = "9c:6b:00:9e:f8:ef";
-        wg-mgnt = "10.100.0.3";
-        wg-serv = "10.200.0.3";
-        gateway = "10.80.169.254";
-        location = "LAB";
-      };
       eta = {
         ipv4 = "158.247.227.38";
         mac = "56:00:05:a2:d3:d7";
@@ -134,10 +107,37 @@ in
           "8.8.8.8"
           "1.1.1.1"
         ];
-        wg-mgnt = "10.100.0.4";
-        wg-serv = "10.200.0.4";
+        wg-mgnt = "10.100.0.1";
+        wg-serv = "10.200.0.1";
         gateway = "158.247.227.1";
         location = "VPS";
+      };
+      psi = {
+        inherit dns;
+        ipv4 = "117.16.251.37";
+        mac = "bc:fc:e7:52:e1:ab";
+        wg-mgnt = "10.100.0.2";
+        wg-serv = "10.200.0.2";
+        gateway = "117.16.251.254";
+        location = "IDC";
+      };
+      rho = {
+        inherit dns;
+        ipv4 = "10.80.169.39";
+        mac = "9c:6b:00:9e:fa:de";
+        wg-mgnt = "10.100.0.3";
+        wg-serv = "10.200.0.3";
+        gateway = "10.80.169.254";
+        location = "LAB";
+      };
+      tau = {
+        inherit dns;
+        ipv4 = "10.80.169.40";
+        mac = "9c:6b:00:9e:f8:ef";
+        wg-mgnt = "10.100.0.4";
+        wg-serv = "10.200.0.4";
+        gateway = "10.80.169.254";
+        location = "LAB";
       };
     };
   };
