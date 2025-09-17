@@ -13,5 +13,6 @@
     openssl
     jq
     rsync
+    minio-client
   ];
 }

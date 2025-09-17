@@ -3,8 +3,8 @@
     ../modules/hardware/asrock-deskmini-x600.nix
     ../modules/disko/xfs-root.nix
     ../modules/disko/xfs-storage.nix
-    ../modules/minio
     ../modules/wake-on-lan.nix
+    ../modules/minio
   ];
 
   disko.rootDisk = "/dev/disk/by-id/nvme-eui.00000000000000006479a79cdac0038f";
