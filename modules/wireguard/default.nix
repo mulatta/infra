@@ -5,46 +5,80 @@
   ...
 }:
 let
-  wireguardPort = 51820;
   cfg = config.networking.sbee.currentHost;
   all = config.networking.sbee.hosts;
   others = lib.filterAttrs (name: _: name != config.networking.hostName) all;
-  wireguardPeers = lib.mapAttrsToList (name: host: {
-    PublicKey = builtins.readFile ./keys/${name};
-    Endpoint = "${host.ipv4}:${builtins.toString wireguardPort}";
-    AllowedIPs = [ "${host.wg0}/32" ];
-    PersistentKeepalive = 25;
-  }) others;
+
+  mkWireguardNetwork =
+    {
+      name,
+      port,
+      ipField,
+      subnet ? "/24",
+    }:
+    let
+      mkPeers = lib.mapAttrsToList (hostName: host: {
+        PublicKey = builtins.readFile (./keys + "/${hostName}_${name}");
+        Endpoint = "${host.ipv4}:${builtins.toString port}";
+        AllowedIPs = [ "${host.${ipField}}/32" ];
+        PersistentKeepalive = 25;
+      }) others;
+    in
+    {
+      netdev = {
+        netdevConfig = {
+          Name = name;
+          Kind = "wireguard";
+        };
+        wireguardConfig = {
+          PrivateKeyFile = config.sops.secrets."${name}-key".path;
+          ListenPort = port;
+        };
+        wireguardPeers = mkPeers;
+      };
+
+      network = {
+        matchConfig.Name = name;
+        address = [ "${cfg.${ipField}}${subnet}" ];
+      };
+
+      firewallPort = port;
+      secretName = "${name}-key";
+    };
+
+  networks = {
+    wg-mgnt = mkWireguardNetwork {
+      name = "wg-mgnt";
+      port = 51820;
+      ipField = "wg-mgnt";
+    };
+
+    wg-serv = mkWireguardNetwork {
+      name = "wg-serv";
+      port = 51821;
+      ipField = "wg-serv";
+    };
+  };
 in
 {
-  systemd.network.netdevs."wg0" = {
-    netdevConfig = {
-      Name = "wg0";
-      Kind = "wireguard";
-    };
-    wireguardConfig = {
-      PrivateKeyFile = config.sops.secrets.wg-key.path;
-      ListenPort = wireguardPort;
-    };
-
-    inherit wireguardPeers;
-  };
-
-  systemd.network.networks."wg0" = {
-    matchConfig.Name = "wg0";
-    address = [ "${cfg.wg0}/24" ];
-  };
+  systemd.network.netdevs = lib.mapAttrs (_: net: net.netdev) networks;
+  systemd.network.networks = lib.mapAttrs (_: net: net.network) networks;
 
   networking.firewall = {
-    allowedUDPPorts = [ 51820 ];
-    trustedInterfaces = [ "wg0" ];
+    allowedUDPPorts = lib.mapAttrsToList (_: net: net.firewallPort) networks;
+    trustedInterfaces = lib.mapAttrsToList (name: _: name) networks;
   };
 
-  sops.secrets.wg-key = {
-    mode = "0400";
-    owner = "systemd-network";
-    group = "systemd-network";
-  };
+  sops.secrets = lib.listToAttrs (
+    lib.mapAttrsToList (_: net: {
+      name = net.secretName;
+      value = {
+        mode = "0400";
+        owner = "systemd-network";
+        group = "systemd-network";
+      };
+    }) networks
+  );
 
   environment.systemPackages = with pkgs; [
     wireguard-tools

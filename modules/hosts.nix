@@ -29,11 +29,19 @@ let
       '';
     };
 
-    wg0 = mkOption {
+    wg-mgnt = mkOption {
       type = types.nullOr types.str;
       default = null;
       description = ''
-        Wireguard interface 0 (wg0) address
+        Wireguard interface 0 (wg-mgnt) address
+      '';
+    };
+
+    wg-serv = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = ''
+        Wireguard interface 0 (wg-mgnt) address
       '';
     };
 
@@ -96,7 +104,8 @@ in
         inherit dns;
         ipv4 = "117.16.251.37";
         mac = "bc:fc:e7:52:e1:ab";
-        wg0 = "10.100.0.1";
+        wg-mgnt = "10.100.0.1";
+        wg-serv = "10.200.0.1";
         gateway = "117.16.251.254";
         location = "IDC";
       };
@@ -104,7 +113,8 @@ in
         inherit dns;
         ipv4 = "10.80.169.39";
         mac = "9c:6b:00:9e:fa:de";
-        wg0 = "10.100.0.2";
+        wg-mgnt = "10.100.0.2";
+        wg-serv = "10.200.0.2";
         gateway = "10.80.169.254";
         location = "LAB";
       };
@@ -112,7 +122,8 @@ in
         inherit dns;
         ipv4 = "10.80.169.40";
         mac = "9c:6b:00:9e:f8:ef";
-        wg0 = "10.100.0.3";
+        wg-mgnt = "10.100.0.3";
+        wg-serv = "10.200.0.3";
         gateway = "10.80.169.254";
         location = "LAB";
       };
@@ -120,7 +131,8 @@ in
         ipv4 = "158.247.240.214";
         mac = "56:00:05:a2:33:73";
         dns = [ "127.0.0.53" ];
-        wg0 = "10.100.0.4";
+        wg-mgnt = "10.100.0.4";
+        wg-serv = "10.200.0.4";
         gateway = "158.247.240.1";
         location = "VPS";
       };

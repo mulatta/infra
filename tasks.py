@@ -231,29 +231,27 @@ def print_age_key(_: Any, host: str) -> None:
 @task
 def generate_wireguard_key(c: Any, hostname: str) -> None:
     """
-    Generate wireguard private key for a given hostname
+    Generate wireguard private keys for a given hostname (wg-mgnt and wg-serv)
     """
     with TemporaryDirectory() as tmp:
-        c.run(
-            f"nix shell --inputs-from . nixpkgs#wireguard-tools -c sh -c '"
-            f"umask 077 && "
-            f"wg genkey > {tmp}/private && "
-            f"wg pubkey < {tmp}/private > {tmp}/public"
-            f"'",
-            echo=True,
-        )
+        # Generate keys for both wg-mgnt and wg-serv
+        for interface in ["wg-mgnt", "wg-serv"]:
+            c.run(
+                f"nix shell --inputs-from . nixpkgs#wireguard-tools -c sh -c '"
+                f"umask 077 && "
+                f"wg genkey > {tmp}/private_{interface} && "
+                f"wg pubkey < {tmp}/private_{interface} > {tmp}/public_{interface}"
+                f"'",
+                echo=True,
+            )
 
-        wg_key = (Path(tmp) / "private").read_text().strip()
-        wg_pubkey = (Path(tmp) / "public").read_text().strip()
+            wg_key = (Path(tmp) / f"private_{interface}").read_text().strip()
+            wg_pubkey = (Path(tmp) / f"public_{interface}").read_text().strip()
 
-        keys = {
-            "wg-key": wg_key,
-            "wg-pubkey": wg_pubkey,
-        }
-
-        for key, value in keys.items():
-            c.run(f"sops --set '[\"{key}\"] {json.dumps(value)}' {ROOT}/hosts/{hostname}.yaml")
-            c.run(f"echo {value} > {ROOT}/modules/wireguard/keys/{hostname}")
+            c.run(
+                f"sops --set '[\"{interface}-key\"] {json.dumps(wg_key)}' {ROOT}/hosts/{hostname}.yaml"
+            )
+            c.run(f"echo {wg_pubkey} > {ROOT}/modules/wireguard/keys/{hostname}_{interface}")
 
 
 @task
@@ -318,6 +316,96 @@ def wake(c: Any, host: str) -> None:
         print(f"Error: {e}")
         if "nixosConfigurations" in str(e):
             print(f"Make sure {host} is defined in your flake configuration")
+
+
+@task
+def shutdown(c: Any, host: str) -> None:
+    """
+    Shutdown a remote host, i.e. inv shutdown --host rho
+    """
+    print(f"Shutdown {host}...")
+    c.run(f"ssh root@{host} shutdown now")
+
+
+@task
+def reboot(c: Any, host: str) -> None:
+    """
+    reboot a remote host, i.e. inv reboot --host rho
+    """
+    print(f"Reboot {host}...")
+    c.run(f"ssh root@{host} reboot now")
+
+
+@task
+def start_service(c: Any, host: str, service: str) -> None:
+    """
+    Start a service on a remote host, i.e. inv start-service --host rho --service nginx
+    """
+    print(f"Starting service '{service}' on {host}...")
+    c.run(f"ssh root@{host} systemctl start {service}", echo=True)
+    print(f"Service '{service}' started on {host}")
+
+
+@task
+def stop_service(c: Any, host: str, service: str) -> None:
+    """
+    Stop a service on a remote host, i.e. inv stop-service --host rho --service nginx
+    """
+    print(f"Stopping service '{service}' on {host}...")
+    c.run(f"ssh root@{host} systemctl stop {service}", echo=True)
+    print(f"Service '{service}' stopped on {host}")
+
+
+@task
+def restart_service(c: Any, host: str, service: str) -> None:
+    """
+    Restart a service on a remote host, i.e. inv restart-service --host rho --service nginx
+    """
+    print(f"Restarting service '{service}' on {host}...")
+    c.run(f"ssh root@{host} systemctl restart {service}", echo=True)
+    print(f"Service '{service}' restarted on {host}")
+
+
+@task
+def enable_service(c: Any, host: str, service: str) -> None:
+    """
+    Enable a service to start automatically on a remote host, i.e. inv enable-service --host rho --service nginx
+    """
+    print(f"Enabling service '{service}' on {host}...")
+    c.run(f"ssh root@{host} systemctl enable {service}", echo=True)
+    print(f"Service '{service}' enabled on {host}")
+
+
+@task
+def disable_service(c: Any, host: str, service: str) -> None:
+    """
+    Disable a service from starting automatically on a remote host, i.e. inv disable-service --host rho --service nginx
+    """
+    print(f"Disabling service '{service}' on {host}...")
+    c.run(f"ssh root@{host} systemctl disable {service}", echo=True)
+    print(f"Service '{service}' disabled on {host}")
+
+
+@task
+def reload_service(c: Any, host: str, service: str) -> None:
+    """
+    Reload a service configuration on a remote host, i.e. inv reload-service --host rho --service nginx
+    """
+    print(f"Reloading service '{service}' configuration on {host}...")
+    c.run(f"ssh root@{host} systemctl reload {service}", echo=True)
+    print(f"Service '{service}' configuration reloaded on {host}")
+
+
+@task
+def list_services(c: Any, host: str, pattern: str = "") -> None:
+    """
+    List services on a remote host, i.e. inv list-services --host rho --pattern nginx
+    """
+    print(f"Listing services on {host}...")
+    if pattern:
+        c.run(f"ssh root@{host} systemctl list-units --type=service | grep {pattern}", echo=True)
+    else:
+        c.run(f"ssh root@{host} systemctl list-units --type=service", echo=True)
 
 
 @task
