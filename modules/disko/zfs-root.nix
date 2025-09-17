@@ -7,7 +7,7 @@
   options = {
     disko.rootDisk = lib.mkOption {
       type = lib.types.str;
-      default = "/dev/nvme0n1";
+      default = "/dev/vda";
       description = "The device to use for the disk.";
     };
   };
@@ -19,30 +19,20 @@
           type = "disk";
           content = {
             type = "gpt";
-            partitions = {
-              boot = {
-                type = "EF02";
-                size = "1M";
+            partitions.ESP = {
+              size = "1G";
+              type = "EF00";
+              content = {
+                type = "filesystem";
+                format = "vfat";
+                mountpoint = "/boot";
               };
-              ESP = {
-                type = "EF00";
-                size = "1G";
-                content = {
-                  type = "filesystem";
-                  format = "vfat";
-                  mountpoint = "/boot";
-                  mountOptions = [
-                    "defaults"
-                    "umask=0077"
-                  ];
-                };
-              };
-              zfs = {
-                size = "100%";
-                content = {
-                  type = "zfs";
-                  pool = "zroot";
-                };
+            };
+            partitions.zfs = {
+              size = "100%";
+              content = {
+                type = "zfs";
+                pool = "zroot";
               };
             };
           };
@@ -61,17 +51,26 @@
           options.ashift = "12";
 
           datasets = {
-            "docker".type = "zfs_fs";
-            "root".type = "zfs_fs";
+            "root" = {
+              type = "zfs_fs";
+            };
             "root/nixos" = {
               type = "zfs_fs";
               mountpoint = "/";
               options."com.sun:auto-snapshot" = "true";
             };
+            "root/home" = {
+              type = "zfs_fs";
+              mountpoint = "/home";
+              options."com.sun:auto-snapshot" = "true";
+            };
             "root/tmp" = {
               type = "zfs_fs";
               mountpoint = "/tmp";
-              options.sync = "disabled";
+              options = {
+                sync = "disabled";
+                "com.sun:auto-snapshot" = "false";
+              };
             };
           };
         };

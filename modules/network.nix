@@ -6,7 +6,6 @@
 let
   cfg = config.networking.sbee.currentHost;
 in
-with lib;
 {
   config = {
     # use networkd

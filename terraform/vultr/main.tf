@@ -39,11 +39,11 @@ resource "vultr_instance" "eta" {
   # Security configuration
   firewall_group_id = vultr_firewall_group.eta.id
 
-  lifecycle {
-    ignore_changes = [
-      os_id
-    ]
-  }
+  # lifecycle {
+  #   ignore_changes = [
+  #     os_id
+  #   ]
+  # }
 }
 
 resource "null_resource" "get_network_info_from_remote" {

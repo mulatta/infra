@@ -1,15 +1,10 @@
 {
-  inputs,
-  lib,
-  ...
-}:
-{
   imports = [
-    inputs.srvos.nixosModules.hardware-vultr-vm
     ../modules/hardware/vultr-vms.nix
+    ../modules/disko/ext4-root.nix
   ];
 
-  boot.loader.systemd-boot.enable = lib.mkForce false;
+  disko.rootDisk = "/dev/vda";
 
   networking.hostName = "eta";
   system.stateVersion = "25.05";
