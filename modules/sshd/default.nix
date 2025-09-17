@@ -16,11 +16,10 @@ in
       ''}
       StreamLocalBindUnlink yes
 
-      Match Address 10.80.169.0/24
-          PermitRootLogin yes
+      PermitRootLogin no
 
-      Match Address 117.16.0.0/16
-          PermitRootLogin yes
+      Match Address 10.100.0.0/24
+          PermitRootLogin prohibit-password
     '';
     # X11Forwarding requires setXAuthLocation which in turn brings in X11
     # dependencies which i am not confident with bringing onto our servers.
