@@ -66,8 +66,12 @@ def update_sops_files(c: Any) -> None:
     Update all sops yaml files according to .sops.nix rules
     """
     c.run(f"nix eval --json -f {ROOT}/.sops.nix | yq e -P - > {ROOT}/.sops.yaml")
+
     # every secret key files should be .yaml, else yml
-    c.run("fd -e yaml -e enc.json -x sops updatekeys --yes {}")
+    excludes = ["**/minio/secrets.yaml"]
+    exclude_args = " ".join([f"--exclude {e}" for e in excludes])
+    cmd = f"fd -e yaml {exclude_args} -x sops updatekeys --yes {{}}"
+    c.run(cmd)
 
 
 @task
