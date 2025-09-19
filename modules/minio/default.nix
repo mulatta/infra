@@ -33,14 +33,14 @@ in
     interfaces.wg-serv.allowedTCPPorts = [ 9000 ];
   };
 
-  sops.secrets.minio_root_user = {
+  sops.secrets.MINIO_ROOT_USER = {
     sopsFile = ./secrets.yaml;
     owner = "minio";
     group = "minio";
     mode = "0400";
   };
 
-  sops.secrets.minio_root_password = {
+  sops.secrets.MINIO_ROOT_PASSWORD = {
     sopsFile = ./secrets.yaml;
     owner = "minio";
     group = "minio";
@@ -49,8 +49,8 @@ in
 
   sops.templates."minio-credentials" = {
     content = ''
-      MINIO_ROOT_USER=${config.sops.placeholder.minio_root_user}
-      MINIO_ROOT_PASSWORD=${config.sops.placeholder.minio_root_password}
+      MINIO_ROOT_USER=${config.sops.placeholder.MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD=${config.sops.placeholder.MINIO_ROOT_PASSWORD}
     '';
     owner = "minio";
     group = "minio";
