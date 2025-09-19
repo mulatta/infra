@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   environment.systemPackages = with pkgs; [
     ipmitool
     nvme-cli
@@ -13,6 +12,11 @@
     openssl
     jq
     rsync
+    rclone
+    lftp
     minio-client
+    zellij
+    nextflow
+    blast
   ];
 }
