@@ -22,5 +22,6 @@
     google-cloud-sdk # for blast update_blastdb.pl runtime
     btop
     curl
+    tree
   ];
 }
