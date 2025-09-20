@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   environment.systemPackages = with pkgs; [
     ipmitool
     nvme-cli
@@ -18,5 +19,8 @@
     zellij
     nextflow
     blast
+    google-cloud-sdk # for blast update_blastdb.pl runtime
+    btop
+    curl
   ];
 }

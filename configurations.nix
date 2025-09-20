@@ -25,6 +25,7 @@ let
     import nixpkgs {
       inherit system;
       config.allowUnfree = true;
+      overlays = [ self.overlays.blast ];
     };
   pkgs-x86_64-linux = pkgsForSystem "x86_64-linux";
   commonModules = [

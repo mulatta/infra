@@ -13,6 +13,7 @@
         ./checks/flake-module.nix
         ./docs/flake-module.nix
         ./formatter/flake-module.nix
+        ./overlays/flake-module.nix
         ./shells/flake-module.nix
         ./terraform/flake-module.nix
       ];
