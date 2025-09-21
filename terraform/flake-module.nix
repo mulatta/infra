@@ -34,6 +34,7 @@
           p.sops
           p.local
           p.random
+          p.cloudflare
           minio-provider
         ]);
         terraform-validate =

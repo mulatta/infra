@@ -25,7 +25,7 @@ let
     import nixpkgs {
       inherit system;
       config.allowUnfree = true;
-      overlays = [ self.overlays.blast ];
+      overlays = [ self.overlays.default ];
     };
   pkgs-x86_64-linux = pkgsForSystem "x86_64-linux";
   commonModules = [
@@ -72,20 +72,21 @@ let
       }
     )
   ];
+  computeModules = commonModules ++ [ ./modules/bioinformatics ];
 in
 {
   flake.nixosConfigurations = {
     psi = nixosSystem {
       pkgs = pkgs-x86_64-linux;
-      modules = commonModules ++ [ ./hosts/psi.nix ];
+      modules = computeModules ++ [ ./hosts/psi.nix ];
     };
     rho = nixosSystem {
       pkgs = pkgs-x86_64-linux;
-      modules = commonModules ++ [ ./hosts/rho.nix ];
+      modules = computeModules ++ [ ./hosts/rho.nix ];
     };
     tau = nixosSystem {
       pkgs = pkgs-x86_64-linux;
-      modules = commonModules ++ [ ./hosts/tau.nix ];
+      modules = computeModules ++ [ ./hosts/tau.nix ];
     };
     eta = nixosSystem {
       pkgs = pkgs-x86_64-linux;

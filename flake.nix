@@ -35,6 +35,7 @@
     nixos-generators.url = "github:nix-community/nixos-generators";
     nixos-images.inputs.nixos-unstable.follows = "nixpkgs";
     nixos-images.url = "github:nix-community/nixos-images";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     sops-nix.url = "github:Mic92/sops-nix";
     srvos.inputs.nixpkgs.follows = "nixpkgs";

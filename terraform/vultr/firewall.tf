@@ -12,6 +12,26 @@ resource "vultr_firewall_rule" "ssh" {
   notes             = "SSH access on port 10022"
 }
 
+resource "vultr_firewall_rule" "http" {
+  firewall_group_id = vultr_firewall_group.eta.id
+  protocol          = "tcp"
+  ip_type           = "v4"
+  subnet            = "0.0.0.0"
+  subnet_size       = 0
+  port              = 80
+  notes             = "HTTP access on port 80"
+}
+
+resource "vultr_firewall_rule" "https" {
+  firewall_group_id = vultr_firewall_group.eta.id
+  protocol          = "tcp"
+  ip_type           = "v4"
+  subnet            = "0.0.0.0"
+  subnet_size       = 0
+  port              = 443
+  notes             = "HTTPS access on port 80"
+}
+
 resource "vultr_firewall_rule" "wireguard_mgnt" {
   firewall_group_id = vultr_firewall_group.eta.id
   protocol          = "udp"

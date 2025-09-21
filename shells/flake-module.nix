@@ -7,6 +7,7 @@
           # deploy tools
           python3.pkgs.invoke
           python3.pkgs.deploykit
+          python3.pkgs.bcrypt
 
           # nix tools
           nixVersions.latest
