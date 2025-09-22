@@ -33,7 +33,7 @@
           p.external
           p.sops
           p.local
-          p.random
+          p.null
           p.cloudflare
           minio-provider
         ]);

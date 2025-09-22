@@ -10,7 +10,7 @@
     group = "ntfy";
     settings = {
       upstream-base-url = "https://ntfy.sh";
-      base-url = "https://ntfy.mulatta.bio";
+      base-url = "https://ntfy.sjanglab.org";
       listen-http = "127.0.0.1:2586";
       behind-proxy = true;
 

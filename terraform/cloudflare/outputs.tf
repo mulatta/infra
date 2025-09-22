@@ -1,3 +1,11 @@
+output "cloudflare_nameservers" {
+  value = cloudflare_zone.sjanglab.name_servers
+}
+
+output "zone_id" {
+  value = cloudflare_zone.sjanglab.id
+}
+
 output "ntfy_url" {
   description = "ntfy service URL"
   value       = "https://ntfy.${var.domain_name}"

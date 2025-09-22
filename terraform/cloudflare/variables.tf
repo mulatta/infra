@@ -1,7 +1,7 @@
 variable "domain_name" {
   description = "Base domain name"
   type        = string
-  default     = "mulatta.bio"
+  default     = "sjanglab.org"
 }
 
 variable "vps_ip" {

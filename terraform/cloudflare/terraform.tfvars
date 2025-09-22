@@ -1,2 +1,2 @@
-cloudflare_zone_id = "758dce3362a9632fc391d0576e42d26d"
-vps_ip             = "158.247.227.38"
+cloudflare_zone_id = ""
+vps_ip             = "141.164.49.234"

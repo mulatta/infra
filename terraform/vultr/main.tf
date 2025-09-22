@@ -38,12 +38,6 @@ resource "vultr_instance" "eta" {
 
   # Security configuration
   firewall_group_id = vultr_firewall_group.eta.id
-
-  # lifecycle {
-  #   ignore_changes = [
-  #     os_id
-  #   ]
-  # }
 }
 
 resource "null_resource" "get_network_info_from_remote" {
@@ -63,12 +57,16 @@ resource "null_resource" "get_network_info_from_remote" {
           'IPV4=$(hostname -I | awk "{print \$1}") && \
            MAC=$(ip link show enp1s0 | awk "/ether/ {print \$2}") && \
            GATEWAY=$(ip route | awk "/default/ {print \$3}") && \
-           DNS=$(awk "/^nameserver/ {print \$2}" /etc/resolv.conf | head -n1) && \
+           DNS_PRIMARY="8.8.8.8" && \
+           DNS_SECONDARY="1.1.1.1" && \
            jq -n --arg ipv4 "$IPV4" \
                  --arg mac "$MAC" \
                  --arg gateway "$GATEWAY" \
-                 --arg dns "$DNS" \
-                 "{ipv4: \$ipv4, mac: \$mac, gateway: \$gateway, dns: \$dns}"' \
+                 --arg dns_primary "$DNS_PRIMARY" \
+                 --arg dns_secondary "$DNS_SECONDARY" \
+                 --arg hostname "${var.hostname}" \
+                 --arg public_ip "${vultr_instance.eta.main_ip}" \
+                 "{ipv4: \$ipv4, mac: \$mac, gateway: \$gateway, dns: [\$dns_primary, \$dns_secondary], hostname: \$hostname, public_ip: \$public_ip}"' \
       > netinfo.json
     EOT
   }
