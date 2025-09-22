@@ -8,8 +8,18 @@ in {
     gc.options = pkgs.lib.mkDefault "--delete-older-than 14d";
 
     settings = {
-      substituters = ["https://nix-community.cachix.org"];
-      trusted-public-keys = ["nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="];
+      trusted-substituters = ["http://10.200.0.4:8080"];
+
+      substituters = [
+        "https://cache.nixos.org"
+        "https://nix-community.cachix.org"
+        "http://10.200.0.4:8080"
+      ];
+      trusted-public-keys = [
+        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+        "cache.sjanglab.org-1:qnmAmr3qctcLiatkrtYX3OpvFKP4Z9whK8pLtSdCgPw="
+      ];
 
       system-features = [
         "big-parallel"
@@ -18,7 +28,7 @@ in {
       ];
 
       # auto-free the /nix/store
-      min-free = asGB 1;
+      min-free = asGB 10;
       max-free = asGB 50;
 
       # Hard-link duplicated files
