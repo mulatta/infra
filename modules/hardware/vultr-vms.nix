@@ -2,9 +2,8 @@
   lib,
   modulesPath,
   ...
-}:
-{
-  imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
+}: {
+  imports = [(modulesPath + "/profiles/qemu-guest.nix")];
 
   services.getty.autologinUser = "root";
   console.earlySetup = true;
@@ -20,7 +19,7 @@
     "sr_mod"
     "virtio_blk"
   ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ ];
-  boot.extraModulePackages = [ ];
+  boot.initrd.kernelModules = [];
+  boot.kernelModules = [];
+  boot.extraModulePackages = [];
 }

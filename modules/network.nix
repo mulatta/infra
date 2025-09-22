@@ -5,6 +5,15 @@
 }: let
   cfg = config.networking.sbee.currentHost;
   hostname = config.networking.hostName;
+
+  subnet =
+    if (hostname == "eta")
+    then "23"
+    else "24";
+  nameservers =
+    if builtins.elem hostname ["psi" "rho" "tau"]
+    then ["117.16.191.6" "168.126.63.1"]
+    else ["8.8.8.8" "1.1.1.1"];
 in {
   config = {
     # use networkd
@@ -23,24 +32,15 @@ in {
 
     # we only manage our in-house instances
     # provisioned instances are managed by provider
-    systemd.network.networks."10-ethernet" =
-      {
-        matchConfig.MACAddress = cfg.mac;
-        routes = [{Gateway = "${cfg.gateway}";}];
-      }
-      // lib.optionalAttrs (hostname == "psi" || hostname == "rho" || hostname == "tau") {
-        address = ["${cfg.ipv4}/24"];
-        dns = [
-          "117.16.191.6"
-          "168.126.63.1"
-        ];
-      }
-      // lib.optionalAttrs (hostname == "eta") {
-        address = ["${cfg.ipv4}/23"];
-        dns = [
-          "8.8.8.8"
-          "1.1.1.1"
-        ];
-      };
+    systemd.network.networks."10-ethernet" = {
+      matchConfig.MACAddress = cfg.mac;
+      address = ["${cfg.ipv4}/${subnet}"];
+      routes = [{Gateway = "${cfg.gateway}";}];
+      dns = nameservers;
+      # domains = [
+      #   "sbee.lab"
+      #   "~."
+      # ];
+    };
   };
 }

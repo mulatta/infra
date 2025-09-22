@@ -2,11 +2,9 @@
   lib,
   config,
   ...
-}:
-let
+}: let
   cert = ./certs + "/${config.networking.hostName}-cert.pub";
-in
-{
+in {
   services.openssh = {
     enable = true;
     # unbind gnupg sockets if they exists
@@ -41,6 +39,6 @@ in
   };
 
   # allow SSH port as 10022
-  services.openssh.ports = [ 10022 ];
-  networking.firewall.allowedTCPPorts = [ 10022 ];
+  services.openssh.ports = [10022];
+  networking.firewall.allowedTCPPorts = [10022];
 }

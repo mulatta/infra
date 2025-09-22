@@ -1,13 +1,11 @@
-{ ... }:
-let
+{...}: let
   # testUserKeys = ["ssh-ed25519 .."]; # ssh public key for user
   extraGroups = [
     "docker"
     "researcher"
     "input"
   ];
-in
-{
+in {
   # users.users = {
   #   # specify your real name in comments
   #   testUsers = {
@@ -25,5 +23,5 @@ in
   # DANGER ZONE!
   # Make sure all data is backed up before adding user names here. This will
   # delete all data of the associated user
-  users.deletedUsers = [ ];
+  users.deletedUsers = [];
 }

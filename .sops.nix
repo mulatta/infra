@@ -5,12 +5,12 @@
 let
   mapAttrsToList = f: attrs: map (name: f name attrs.${name}) (builtins.attrNames attrs);
 
-  renderPermissions =
-    attrs:
+  renderPermissions = attrs:
     mapAttrsToList (path: keys: {
       path_regex = path;
-      key_groups = [ { age = keys ++ groups.admin; } ];
-    }) attrs;
+      key_groups = [{age = keys ++ groups.admin;}];
+    })
+    attrs;
 
   # command to add a new age key for a new host
   # inv print-age-key --hosts "host1,host2"
@@ -30,22 +30,22 @@ let
     builtins.listToAttrs (
       mapAttrsToList (hostname: key: {
         name = "hosts/${hostname}.yaml$";
-        value = [ key ];
-      }) keys.machines
+        value = [key];
+      })
+      keys.machines
     )
     // builtins.mapAttrs (_name: value: (map (x: keys.machines.${x}) value)) {
-      "modules/nfs/secrets.yaml" = [ "psi" ];
-      "modules/users/xrdp-passwords.yaml" = [ "psi" ];
+      "modules/nfs/secrets.yaml" = ["psi"];
+      "modules/users/xrdp-passwords.yaml" = ["psi"];
       "modules/minio/secrets.yaml" = [
         "tau"
         "rho"
       ];
     }
     // {
-      "modules/sshd/[^/]+\\.yaml$" = [ ];
-      "terraform/secrets.yaml" = [ ];
+      "modules/sshd/[^/]+\\.yaml$" = [];
+      "terraform/secrets.yaml" = [];
     };
-in
-{
+in {
   creation_rules = renderPermissions sopsPermissions;
 }

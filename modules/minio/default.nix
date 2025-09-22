@@ -1,8 +1,6 @@
-{ config, ... }:
-let
+{config, ...}: let
   inherit (config.networking.sbee) hosts;
-in
-{
+in {
   services.minio = {
     enable = true;
 
@@ -30,7 +28,7 @@ in
       9000
       9001
     ];
-    interfaces.wg-serv.allowedTCPPorts = [ 9000 ];
+    interfaces.wg-serv.allowedTCPPorts = [9000];
   };
 
   sops.secrets.MINIO_ROOT_USER = {

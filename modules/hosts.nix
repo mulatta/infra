@@ -24,7 +24,7 @@
       type = types.nullOr types.str;
       default = null;
       description = ''
-        Wireguard interface 0 (wg-mgnt) address
+        Wireguard interface for management (wg-mgnt) address
       '';
     };
 
@@ -32,7 +32,7 @@
       type = types.nullOr types.str;
       default = null;
       description = ''
-        Wireguard interface 0 (wg-mgnt) address
+        Wireguard interface for service (wg-serv) address
       '';
     };
 

@@ -2,8 +2,7 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   mulattaKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINkKJdIzvxlWcry+brNiCGLBNkxrMxFDyo1anE4xRNkL"
   ];
@@ -14,8 +13,7 @@ let
     "admin"
     "input"
   ];
-in
-{
+in {
   users.users = {
     # Seungwon Lee
     mulatta = {

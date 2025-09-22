@@ -3,8 +3,7 @@
   config,
   lib,
   ...
-}:
-{
+}: {
   hardware.graphics.enable = true;
   # Switching from datacenter driver to production driver for kernel 6.15 compatibility
   # The production driver (570.153.02) includes patches for kernel 6.15 support
@@ -15,7 +14,7 @@
   systemd.services.nvidia-fabricmanager.enable = lib.mkForce false;
 
   # Add nvidia to videoDrivers to satisfy nvidia-container-toolkit assertion
-  services.xserver.videoDrivers = [ "nvidia" ];
+  services.xserver.videoDrivers = ["nvidia"];
 
   virtualisation.docker.enable = true;
   hardware.nvidia-container-toolkit.enable = true;

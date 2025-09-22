@@ -4,8 +4,7 @@
   pkgs,
   username,
   ...
-}:
-{
+}: {
   config = {
     home.packages = with pkgs; [
       # put user-global packages here

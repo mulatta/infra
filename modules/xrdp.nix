@@ -1,7 +1,6 @@
 # https://github.com/TUM-DSE/doctor-cluster-config/tree/4702b65ba00ccaf932fa87c71eee5a5b584896ab/modules/xrdp.nix
-{ pkgs, ... }:
-{
-  networking.firewall.allowedTCPPorts = [ 3389 ];
+{pkgs, ...}: {
+  networking.firewall.allowedTCPPorts = [3389];
   services.xrdp.enable = true;
   # FIXME: this is actually ignored with the latest xrdp
   services.xrdp.defaultWindowManager = "${pkgs.xfce.xfce4-session}/bin/xfce4-session";

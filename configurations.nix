@@ -2,30 +2,28 @@
   self,
   inputs,
   ...
-}:
-let
-  inherit (inputs)
+}: let
+  inherit
+    (inputs)
     nixpkgs
     disko
     sops-nix
     srvos
     ;
 
-  nixosSystem =
-    args:
+  nixosSystem = args:
     nixpkgs.lib.nixosSystem (
       {
-        specialArgs = { inherit self inputs; };
+        specialArgs = {inherit self inputs;};
       }
       // args
     );
 
-  pkgsForSystem =
-    system:
+  pkgsForSystem = system:
     import nixpkgs {
       inherit system;
       config.allowUnfree = true;
-      overlays = [ self.overlays.default ];
+      overlays = [self.overlays.default];
     };
   pkgs-x86_64-linux = pkgsForSystem "x86_64-linux";
   commonModules = [
@@ -54,11 +52,9 @@ let
         config,
         lib,
         ...
-      }:
-      let
+      }: let
         sopsFile = ./. + "/hosts/${config.networking.hostName}.yaml";
-      in
-      {
+      in {
         # TODO: share nixpkgs for each machine to speed up local evaluation.
         #nixpkgs.pkgs = self.inputs.nixpkgs.legacyPackages.${system};
 
@@ -72,25 +68,29 @@ let
       }
     )
   ];
-  computeModules = commonModules ++ [ ./modules/bioinformatics ];
-in
-{
+  computeModules =
+    commonModules
+    ++ [
+      ./modules/bioinformatics
+      ./modules/scratch-space.nix
+    ];
+in {
   flake.nixosConfigurations = {
     psi = nixosSystem {
       pkgs = pkgs-x86_64-linux;
-      modules = computeModules ++ [ ./hosts/psi.nix ];
+      modules = computeModules ++ [./hosts/psi.nix];
     };
     rho = nixosSystem {
       pkgs = pkgs-x86_64-linux;
-      modules = computeModules ++ [ ./hosts/rho.nix ];
+      modules = computeModules ++ [./hosts/rho.nix];
     };
     tau = nixosSystem {
       pkgs = pkgs-x86_64-linux;
-      modules = computeModules ++ [ ./hosts/tau.nix ];
+      modules = computeModules ++ [./hosts/tau.nix];
     };
     eta = nixosSystem {
       pkgs = pkgs-x86_64-linux;
-      modules = commonModules ++ [ ./hosts/eta.nix ];
+      modules = commonModules ++ [./hosts/eta.nix];
     };
   };
 }

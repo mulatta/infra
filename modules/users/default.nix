@@ -3,8 +3,7 @@
   lib,
   config,
   ...
-}:
-{
+}: {
   imports = [
     # system monitoring / backup infra
     ./admins.nix
@@ -30,12 +29,14 @@
           user.isSystemUser
           || lib.all (
             group: group != "student" || group != "admin" || group != "researcher"
-          ) user.extraGroups;
+          )
+          user.extraGroups;
         message = ''
           User ${name} is not in the admin, researcher, student group.
           Please add them to the correct group.
         '';
-      }) config.users.users
+      })
+      config.users.users
     );
   };
 }
