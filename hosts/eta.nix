@@ -2,7 +2,9 @@
   imports = [
     ../modules/hardware/vultr-vms.nix
     ../modules/disko/ext4-root.nix
-    # ../modules/ntfy.nix
+    ../modules/ntfy.nix
+    ../modules/minio/reverse-proxy.nix
+    ../modules/harmonia/reverse-proxy.nix
   ];
 
   disko.rootDisk = "/dev/vda";

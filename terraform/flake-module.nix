@@ -19,7 +19,7 @@
     devShells.terraform = pkgs.mkShellNoCC {
       packages = [
         pkgs.sops
-        pkgs.terragrunt
+        pkgs.unstable.terragrunt
         config.packages.terraform
       ];
     };
@@ -31,26 +31,9 @@
         p.sops
         p.local
         p.null
-        p.namecheap
+        p.cloudflare
         minio-provider
       ]);
-      terraform-validate =
-        pkgs.runCommand "terraform-validate"
-        {
-          buildInputs = [config.packages.terraform];
-          files = pkgs.lib.fileset.toSource rec {
-            root = ./.;
-            fileset = pkgs.lib.fileset.unions [
-              root
-            ];
-          };
-        }
-        ''
-          cp --no-preserve=mode -r $files/* .
-          tofu init -upgrade -backend=false -input=false
-          tofu validate
-          touch $out
-        '';
     };
   };
 }

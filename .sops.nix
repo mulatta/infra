@@ -37,10 +37,21 @@ let
     // builtins.mapAttrs (_name: value: (map (x: keys.machines.${x}) value)) {
       "modules/nfs/secrets.yaml" = ["psi"];
       "modules/users/xrdp-passwords.yaml" = ["psi"];
+      "modules/acme/secrets.yaml" = [
+        "eta"
+      ];
       "modules/minio/secrets.yaml" = [
         "tau"
         "rho"
       ];
+      # identical with modules/minio/secrets.yaml
+      "terraform/minio/secrets.yaml" = [
+        "tau"
+        "rho"
+      ];
+      "terraform/cloudflare/secrets.yaml" = ["eta"];
+      "terraform/github/secrets.yaml" = [];
+      "terraform/vultr/secrets.yaml" = [];
     }
     // {
       "modules/sshd/[^/]+\\.yaml$" = [];

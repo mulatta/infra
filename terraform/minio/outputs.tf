@@ -1,6 +1,16 @@
-output "bucket_name" {
-  description = "Created bucket name"
-  value       = minio_s3_bucket.raw_database.bucket
+output "uniprot-bucket" {
+  description = "Uniprot database bucket"
+  value       = minio_s3_bucket.uniprot.bucket
+}
+
+output "ncbi-bucket" {
+  description = "NCBI database bucket"
+  value       = minio_s3_bucket.ncbi.bucket
+}
+
+output "tfstate-bucket" {
+  description = "tfstate bucket"
+  value       = minio_s3_bucket.tfstate.bucket
 }
 
 output "mulatta_credentials" {
@@ -15,15 +25,13 @@ output "mulatta_credentials" {
   sensitive = true
 }
 
-output "mulatta_service_credentials" {
-  description = "Service account access credentials"
+output "buildbot_credentials" {
   value = {
-
+    username           = minio_iam_user.buildbot.name
+    console_access_key = minio_iam_user.buildbot.name
+    console_secret_key = minio_iam_user.buildbot.secret
+    service_access_key = minio_iam_service_account.buildbot.access_key
+    service_secret_key = minio_iam_service_account.buildbot.secret_key
   }
   sensitive = true
-}
-
-output "minio_endpoint" {
-  description = "MinIO endpoint URL"
-  value       = "http://${module.minio_tunnel.host}:${module.minio_tunnel.port}"
 }

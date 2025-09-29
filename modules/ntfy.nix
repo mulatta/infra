@@ -1,8 +1,10 @@
 {
+  config,
   lib,
   pkgs,
   ...
 }: {
+  imports = [./acme];
   services.ntfy-sh = {
     enable = true;
     package = pkgs.unstable.ntfy-sh;
@@ -42,46 +44,7 @@
     };
   };
 
-  services.nginx = {
-    enable = true;
-
-    virtualHosts."ntfy.mulatta.bio" = {
-      forceSSL = true;
-      enableACME = true;
-
-      locations."/" = {
-        proxyPass = "http://127.0.0.1:2586";
-        proxyWebsockets = true;
-        extraConfig = ''
-          proxy_set_header Host $host;
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header X-Forwarded-Proto $scheme;
-
-          proxy_set_header Authorization $http_authorization;
-
-          proxy_connect_timeout 3m;
-          proxy_send_timeout 3m;
-          proxy_read_timeout 3m;
-
-          proxy_buffering off;
-          proxy_request_buffering off;
-        '';
-      };
-    };
-  };
-
   systemd.services.ntfy-sh.serviceConfig.DynamicUser = lib.mkForce false;
-
-  security.acme = {
-    acceptTerms = true;
-    defaults.email = "lsw1167@gmail.com";
-  };
-
-  networking.firewall.allowedTCPPorts = [
-    80
-    443
-  ];
 
   users.users.ntfy = {
     isSystemUser = true;
@@ -93,5 +56,39 @@
     "d /var/lib/ntfy 0755 ntfy ntfy"
     "d /var/cache/ntfy 0755 ntfy ntfy"
     "d /var/log/ntfy 0755 ntfy ntfy"
+  ];
+
+  security.acme.certs."ntfy.sjanglab.org" = {
+    dnsProvider = "cloudflare";
+    environmentFile = config.sops.secrets.cloudflare-credentials.path;
+    webroot = null;
+  };
+
+  services.nginx.virtualHosts."ntfy.sjanglab.org" = {
+    forceSSL = true;
+    enableACME = true;
+
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:2586";
+      proxyWebsockets = true;
+      extraConfig = ''
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_connect_timeout 3m;
+        proxy_send_timeout 3m;
+        proxy_read_timeout 3m;
+
+        proxy_buffering off;
+        proxy_request_buffering off;
+      '';
+    };
+  };
+
+  networking.firewall.allowedTCPPorts = [
+    80
+    443
   ];
 }

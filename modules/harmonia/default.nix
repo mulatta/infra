@@ -13,23 +13,6 @@ in {
     };
   };
 
-  # services.nginx = {
-  #   enable = true;
-
-  #   virtualHosts."cache.mulatta.bio" = {
-  #     forceSSL = true;
-  #     enableACME = true;
-
-  #     locations."/" = {
-  #       proxyPass = "http://127.0.0.1:5000";
-  #       extraConfig = ''
-  #         proxy_set_header Host $host;
-  #         proxy_set_header X-Real-IP $remote_addr;
-  #       '';
-  #     };
-  #   };
-  # };
-
   networking.firewall = {
     allowedTCPPorts = [];
     interfaces.wg-serv.allowedTCPPorts = [8080];

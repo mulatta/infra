@@ -27,7 +27,7 @@ resource "github_repository" "infra" {
   pages {
     build_type = "workflow"
     source {
-      branch = "master"
+      branch = "main"
       path   = "/"
     }
   }

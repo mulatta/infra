@@ -4,7 +4,11 @@
   #   extra-substituters = [];
   #   extra-trusted-public-keys = [];
   # };
-  outputs = inputs @ {flake-parts, ...}:
+  outputs = inputs @ {
+    self,
+    flake-parts,
+    ...
+  }:
     flake-parts.lib.mkFlake {inherit inputs;} {
       systems = import inputs.systems;
       imports = [
@@ -16,6 +20,15 @@
         ./shells/flake-module.nix
         ./terraform/flake-module.nix
       ];
+      perSystem = {system, ...}: {
+        _module.args.pkgs = import inputs.nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+          overlays = [
+            self.overlays.default
+          ];
+        };
+      };
     };
 
   inputs = {

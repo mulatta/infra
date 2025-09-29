@@ -14,7 +14,7 @@ in {
       "http://${hosts.tau.wg-mgnt}:9000/storage/storage2"
     ];
 
-    rootCredentialsFile = config.sops.templates."minio-credentials".path;
+    rootCredentialsFile = config.sops.secrets.minio-credentials.path;
     browser = true;
   };
 
@@ -23,35 +23,18 @@ in {
     "d /storage/storage2 0755 minio minio -"
   ];
 
+  sops.secrets.minio-credentials = {
+    sopsFile = ./secrets.yaml;
+    owner = "minio";
+    group = "minio";
+    mode = "0400";
+  };
+
   networking.firewall = {
     interfaces.wg-mgnt.allowedTCPPorts = [
       9000
       9001
     ];
-    interfaces.wg-serv.allowedTCPPorts = [9000];
-  };
-
-  sops.secrets.MINIO_ROOT_USER = {
-    sopsFile = ./secrets.yaml;
-    owner = "minio";
-    group = "minio";
-    mode = "0400";
-  };
-
-  sops.secrets.MINIO_ROOT_PASSWORD = {
-    sopsFile = ./secrets.yaml;
-    owner = "minio";
-    group = "minio";
-    mode = "0400";
-  };
-
-  sops.templates."minio-credentials" = {
-    content = ''
-      MINIO_ROOT_USER=${config.sops.placeholder.MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD=${config.sops.placeholder.MINIO_ROOT_PASSWORD}
-    '';
-    owner = "minio";
-    group = "minio";
-    mode = "0400";
+    interfaces.wg-serv.allowedTCPPorts = [9000 9001];
   };
 }
