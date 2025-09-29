@@ -3,7 +3,7 @@
   lib,
   ...
 }: let
-  mulattaKeys = [
+  seungwonKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINkKJdIzvxlWcry+brNiCGLBNkxrMxFDyo1anE4xRNkL"
   ];
 
@@ -16,22 +16,22 @@
 in {
   users.users = {
     # Seungwon Lee
-    mulatta = {
+    seungwon = {
       isNormalUser = true;
-      home = "/home/mulatta";
+      home = "/home/seungwon";
       inherit extraGroups;
       shell = "/run/current-system/sw/bin/fish";
       uid = 1000;
-      openssh.authorizedKeys.keys = mulattaKeys;
+      openssh.authorizedKeys.keys = seungwonKeys;
     };
 
     root = {
       hashedPasswordFile = lib.mkIf config.users.withSops config.sops.secrets.root-password-hash.path;
-      openssh.authorizedKeys.keys = mulattaKeys;
+      openssh.authorizedKeys.keys = seungwonKeys;
     };
   };
 
   nix.settings.trusted-users = [
-    "mulatta"
+    "seungwon"
   ];
 }

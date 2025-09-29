@@ -18,7 +18,7 @@ let
   groups = with keys.users; {
     admin = [
       # admins may access all secrets
-      mulatta
+      seungwon
     ];
     all = builtins.attrValues (keys.users // keys.machines);
   };
