@@ -1,12 +1,9 @@
-{config, ...}: let
-  # We use tau as binary cache server
-  cacheAddress = config.networking.sbee.hosts.tau.wg-serv;
-in {
+{config, ...}: {
   services.harmonia = {
     enable = true;
     signKeyPaths = [config.sops.secrets.harmonia-private-key.path];
     settings = {
-      bind = "${cacheAddress}:8080";
+      bind = "${config.networking.sbee.hosts.tau.wg-serv}:5000";
       workers = 4;
       max_connection_rate = 256;
       priority = 30;
@@ -15,11 +12,11 @@ in {
 
   networking.firewall = {
     allowedTCPPorts = [];
-    interfaces.wg-serv.allowedTCPPorts = [8080];
+    interfaces.wg-serv.allowedTCPPorts = [5000];
   };
 
   networking.firewall.extraCommands = ''
-    iptables -I INPUT -p tcp --dport 8080 ! -s 10.200.0.0/24 ! -j DROP
+    iptables -I INPUT -p tcp --dport 5000 ! -s 10.200.0.0/24 -j DROP
   '';
 
   sops.secrets.harmonia-private-key = {

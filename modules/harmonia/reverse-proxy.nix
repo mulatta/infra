@@ -1,32 +1,23 @@
-{config, ...}: let
-  proxy = upstream: ''
-    proxy_pass http://@${upstream}/;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_http_version 1.1;
-    proxy_buffering off;
-
-    limit_req zone=cache_limit burst=20 nodelay;
-  '';
-in {
+{config, ...}: {
   imports = [../acme];
+
   services.nginx = {
-    commonHttpConfig = ''
-      limit_req_zone $binary_remote_addr zone=cache_limit:10m rate=10r/s;
-    '';
-    upstreams = {
-      "@cache".extraConfig = "server 10.200.0.4:8080;";
-    };
+    enable = true;
+    recommendedTlsSettings = true;
 
     virtualHosts."cache.sjanglab.org" = {
-      forceSSL = true;
       enableACME = true;
-      extraConfig = ''
-        add_header Strict-Transport-Security 'max-age=31536000; includeSubDomains; preload' always;
-      '';
-      locations."/".extraConfig = proxy "cache";
+      forceSSL = true;
+      locations."/" = {
+        extraConfig = ''
+          proxy_pass http://${config.networking.sbee.hosts.tau.wg-serv}:5000;
+          proxy_set_header Host $host;
+          proxy_http_version 1.1;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection $connection_upgrade;
+        '';
+      };
     };
   };
 

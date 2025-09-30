@@ -7,7 +7,6 @@
 in {
   services.openssh = {
     enable = true;
-    # unbind gnupg sockets if they exists
     extraConfig = ''
       ${lib.optionalString (builtins.pathExists cert) ''
         HostCertificate ${cert}
@@ -18,6 +17,10 @@ in {
 
       Match Address 10.100.0.0/24
           PermitRootLogin prohibit-password
+
+      Match Address 10.200.0.0/24
+          PermitRootLogin no
+
     '';
     # X11Forwarding requires setXAuthLocation which in turn brings in X11
     # dependencies which i am not confident with bringing onto our servers.

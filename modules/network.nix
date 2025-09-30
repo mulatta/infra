@@ -37,10 +37,6 @@ in {
       address = ["${cfg.ipv4}/${subnet}"];
       routes = [{Gateway = "${cfg.gateway}";}];
       dns = nameservers;
-      # domains = [
-      #   "sbee.lab"
-      #   "~."
-      # ];
     };
   };
 }

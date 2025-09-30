@@ -1,5 +1,6 @@
 # https://github.com/nix-community/infra/blob/d886971901070f0d1f5265cef08582051c856e7d/modules/shared/nix-daemon.nix
 {
+  lib,
   pkgs,
   ...
 }: let
@@ -11,10 +12,10 @@ in {
     gc.options = pkgs.lib.mkDefault "--delete-older-than 14d";
 
     settings = {
-      trusted-substituters = ["http://10.200.0.4:8080"];
+      trusted-substituters = ["http://10.200.0.4:5000"];
 
       substituters = [
-        "http://10.200.0.4:8080"
+        "http://10.200.0.4:5000"
         "https://cache.nixos.org"
         "https://nix-community.cachix.org"
       ];
@@ -25,14 +26,14 @@ in {
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       ];
 
-      post-build-hook = pkgs.writeShellScript "uploadCache" ''
-        set -eu
-        set -f
-        export IFS=' '
-        ${pkgs.nix}/bin/nix copy \
-        --to "http://10.200.0.4:8080" \
-        $OUT_PATHS || true
-      '';
+      # post-build-hook = lib.mkIf (config.networking.hostName != "tau") (pkgs.writeShellScript "uploadCache" ''
+      #   set -eu
+      #   set -f
+      #   export IFS=' '
+      #   ${pkgs.nix}/bin/nix copy \
+      #   --to "ssh://10.100.0.4" \
+      #   $OUT_PATHS
+      # '');
 
       system-features = [
         "big-parallel"
