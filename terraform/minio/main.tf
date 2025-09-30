@@ -13,6 +13,11 @@ resource "minio_s3_bucket" "tfstate" {
   force_destroy = true
 }
 
+resource "minio_s3_bucket" "project-irr" {
+  bucket        = "project-irr"
+  force_destroy = true
+}
+
 resource "minio_s3_bucket_versioning" "tfstate_versioning" {
   bucket = minio_s3_bucket.tfstate.bucket
   versioning_configuration {

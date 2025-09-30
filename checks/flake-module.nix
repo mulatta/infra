@@ -11,7 +11,7 @@
     checks =
       {
         inherit (self') formatter;
-        inherit (self'.packages) terraform-validate sops-check;
+        inherit (self'.packages) sops-check;
       }
       # // lib.optionalAttrs (system == "x86_64-linux") {
       #   inherit (self'.packages) installer;
