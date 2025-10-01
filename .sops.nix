@@ -52,6 +52,7 @@ let
       "terraform/cloudflare/secrets.yaml" = ["eta"];
       "terraform/github/secrets.yaml" = [];
       "terraform/vultr/secrets.yaml" = [];
+      "terraform/test-machine/secrets.yaml" = [];
     }
     // {
       "modules/sshd/[^/]+\\.yaml$" = [];

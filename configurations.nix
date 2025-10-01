@@ -92,5 +92,9 @@ in {
       pkgs = pkgs-x86_64-linux;
       modules = commonModules ++ [./hosts/eta.nix];
     };
+    turing = nixosSystem {
+      pkgs = pkgs-x86_64-linux;
+      modules = commonModules ++ [./hosts/turing.nix];
+    };
   };
 }

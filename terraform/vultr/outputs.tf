@@ -5,5 +5,7 @@ output "instance_info" {
     region   = vultr_instance.eta.region
     plan     = vultr_instance.eta.plan
     status   = vultr_instance.eta.status
+    ipv4     = vultr_instance.eta.main_ip
+    gateway  = vultr_instance.eta.gateway_v4
   }
 }

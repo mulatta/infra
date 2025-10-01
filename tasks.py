@@ -69,7 +69,7 @@ def update_sops_files(c: Any) -> None:
 
     # every secret key files should be .yaml, else yml
     excludes = ["**/minio/secrets.yaml"]
-    exclude_args = " ".join([f"--exclude {e}" for e in excludes])
+    exclude_args = " ".join([f'--exclude "{e}"' for e in excludes])
     cmd = f"fd -e yaml {exclude_args} -x sops updatekeys --yes {{}}"
     c.run(cmd)
 
@@ -133,7 +133,14 @@ def install(c: Any, machine: str, hostname: str, extra_args: str = "") -> None:
     with TemporaryDirectory() as tmpdir:
         decrypt_host_keys(c, machine, tmpdir)
         c.run(
-            f"nix run github:nix-community/nixos-anywhere#nixos-anywhere -- --flake .#{machine} {extra_args} --build-on remote --extra-files {tmpdir} {hostname}",
+            "nix run github:nix-community/nixos-anywhere#nixos-anywhere -- "
+            f"--flake .#{machine} "
+            f"--kexec https://github.com/mulatta/infra/releases/download/staging-57e83bd/nixos-kexec.tar.gz "
+            f"--post-kexec-ssh-port 10022 "
+            "--build-on remote "
+            f"--extra-files {tmpdir} "
+            f"{extra_args} "
+            f"root@{hostname}",
             echo=True,
         )
 

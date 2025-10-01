@@ -41,6 +41,7 @@
       };
 
       settings.global.excludes = [
+        "hosts/**.yaml"
         "*/secrets.yaml"
         "*/secrets.yml"
         "*.lock"

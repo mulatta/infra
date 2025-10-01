@@ -15,6 +15,7 @@
         ./configurations.nix
         ./checks/flake-module.nix
         ./docs/flake-module.nix
+        ./packages/flake-module.nix
         ./formatter/flake-module.nix
         ./overlays/flake-module.nix
         ./shells/flake-module.nix

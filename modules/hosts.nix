@@ -43,11 +43,26 @@
         Default gateway for this host
       '';
     };
+    tags = mkOption {
+      type = types.listOf (types.enum [
+        "public-ip"
+        "nat-behind"
+        "lab-network"
+        "kren-dns"
+        "vps-network"
+      ]);
+      default = [];
+      description = ''
+        Tags for categorizing host configuration
+        - "public-ip": Host has public IP and can accept incoming connections
+        - "nat-behind": Host is behind NAT
+        - "lab-network": Host is part of lab internal network
+        - "vps-network": Host is part of vps(vultr) network
+        - "kren-dns": Host uses KREN network
+      '';
+    };
   };
 in {
-  imports = [
-    ./wireguard
-  ];
   options = with lib; {
     networking.sbee.hosts = mkOption {
       type = with types; attrsOf (submodule [{options = hostOptions;}]);
@@ -75,6 +90,7 @@ in {
         mac = "56:00:05:a5:b3:57";
         wg-mgnt = "10.100.0.1";
         wg-serv = "10.200.0.1";
+        tags = ["public-ip" "vps-network"];
       };
       psi = {
         ipv4 = "117.16.251.37";
@@ -82,6 +98,7 @@ in {
         mac = "bc:fc:e7:52:e1:ab";
         wg-mgnt = "10.100.0.2";
         wg-serv = "10.200.0.2";
+        tags = ["public-ip" "kren-dns"];
       };
       rho = {
         ipv4 = "10.80.169.39";
@@ -89,6 +106,7 @@ in {
         mac = "9c:6b:00:9e:fa:de";
         wg-mgnt = "10.100.0.3";
         wg-serv = "10.200.0.3";
+        tags = ["nat-behind" "lab-network" "kren-dns"];
       };
       tau = {
         ipv4 = "10.80.169.40";
@@ -96,6 +114,14 @@ in {
         mac = "9c:6b:00:9e:f8:ef";
         wg-mgnt = "10.100.0.4";
         wg-serv = "10.200.0.4";
+        tags = ["nat-behind" "lab-network" "kren-dns"];
+      };
+      turing = {
+        ipv4 = "158.247.212.73";
+        gateway = "158.247.212.1";
+        mac = "56:00:05:aa:d4:72";
+        wg-mgnt = "10.100.0.5";
+        wg-serv = "10.200.0.5";
       };
     };
   };
