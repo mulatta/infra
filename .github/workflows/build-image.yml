@@ -1,0 +1,38 @@
+name: Build NixOS Images
+on:
+  push:
+    tags:
+      - "v*.*.*"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v24
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: "experimental-features = nix-command flakes\nsubstituters = https://cache.nixos.org \ntrusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=\n"
+      - name: Build kexec
+        run: |
+          nix build .#kexec
+          cp result/*.tar.gz nixos-kexec.tar.gz
+      - name: Get commit info
+        id: commit
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: nixos-kexec.tar.gz
+          tag_name: ${{ github.ref_name }}
+          name: "Release ${{ github.ref_name }}"
+          body: |
+            📦 NixOS Kexec Image Release
+
+            **Version:** ${{ github.ref_name }}
+            **Commit:** ${{ steps.commit.outputs.sha_short }}
+            **SHA:** ${{ github.sha }}
+
+            **Files:**
+            - `nixos-kexec.tar.gz` - Kexec tarball for nixos-anywhere
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
