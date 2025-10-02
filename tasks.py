@@ -135,7 +135,7 @@ def install(c: Any, machine: str, hostname: str, extra_args: str = "") -> None:
         c.run(
             "nix run github:nix-community/nixos-anywhere#nixos-anywhere -- "
             f"--flake .#{machine} "
-            f"--kexec https://github.com/mulatta/infra/releases/download/staging-57e83bd/nixos-kexec.tar.gz "
+            f"--kexec https://github.com/sbee-lab/infra/releases/download/v1.0.0/nixos-kexec.tar.gz "
             f"--post-kexec-ssh-port 10022 "
             "--build-on remote "
             f"--extra-files {tmpdir} "
