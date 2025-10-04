@@ -1,23 +1,47 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   environment.systemPackages = with pkgs; [
-    ipmitool
+    # monitoring
     nvme-cli
     pciutils
-    python3
-    git
     lsof
-    ripgrep
-    htop
-    openssl
-    jq
-    lftp
     btop
+    iperf3
+    hyperfine
+    ookla-speedtest
+    unstable.somo
+
+    # core tools
+    git
+    openssl
+    (lib.hiPrio uutils-coreutils-noprefix)
+    (lib.hiPrio uutils-findutils)
+    (lib.hiPrio uutils-diffutils)
+    python3
+    ripgrep
+    lftp
     curl
     wget
     tree
-    ntfy-sh
-    ookla-speedtest
-    iperf3
+    jq
     pv
+    fd
+    rsync
+    rclone
+
+    # with research
+    dvc-with-remotes
+    ntfy-sh
+    parallel
+    aria2
+    b3sum
+    rblake3sum
+
+    # utility
+    zellij
+    minio-client
   ];
 }

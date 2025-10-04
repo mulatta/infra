@@ -71,8 +71,8 @@
   computeModules =
     commonModules
     ++ [
-      ./modules/bioinformatics
       ./modules/scratch-space.nix
+      ({pkgs, ...}: {environment.systemPackages = with pkgs.toolz; [bbtools blast nextflow];})
     ];
 in {
   flake.nixosConfigurations = {
