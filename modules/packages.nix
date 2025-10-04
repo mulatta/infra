@@ -15,5 +15,9 @@
     curl
     wget
     tree
+    ntfy-sh
+    ookla-speedtest
+    iperf3
+    pv
   ];
 }
