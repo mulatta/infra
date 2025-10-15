@@ -37,17 +37,17 @@
     ./modules/network.nix
     ./modules/packages.nix
     ./modules/register-flake.nix
+    ./modules/users
+    ./modules/bootloader.nix
+    ./modules/monitoring/vector
 
     disko.nixosModules.disko
 
     srvos.nixosModules.server
 
-    srvos.nixosModules.mixins-telegraf
     srvos.nixosModules.mixins-terminfo
     srvos.nixosModules.mixins-nix-experimental
 
-    ./modules/users
-    ./modules/bootloader.nix
     sops-nix.nixosModules.sops
     (
       {
