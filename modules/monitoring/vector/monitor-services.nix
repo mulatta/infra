@@ -35,12 +35,25 @@ in {
           inputs = ["nextflow_weblog"];
           source = ''
             .log_type = "nextflow"
-            .project = .runName ?? "unknown"
-            .workflow_id = .runId ?? "unknown"
-            .task = .name ?? "unknown"
-            .status = .status ?? "UNKNOWN"
-            .hostname = .hostname ?? "unknown"
-            .timestamp = .submit ?? now()
+
+            # Use exists() for null coalescing - VRL ?? is for error coalescing only
+            .project = "unknown"
+            if exists(.runName) { .project = to_string!(.runName) }
+
+            .workflow_id = "unknown"
+            if exists(.runId) { .workflow_id = to_string!(.runId) }
+
+            .task = "unknown"
+            if exists(.name) { .task = to_string!(.name) }
+
+            .status = "UNKNOWN"
+            if exists(.status) { .status = to_string!(.status) }
+
+            .hostname = "unknown"
+            if exists(.hostname) { .hostname = to_string!(.hostname) }
+
+            .timestamp = now()
+            if exists(.submit) { .timestamp = .submit }
           '';
         };
       };
@@ -65,13 +78,12 @@ in {
           type = "file";
           inputs = ["parse_nextflow"];
           path = "/var/log/nextflow/weblog-%Y-%m-%d.log";
-          encoding.codec = "ndjson";
+          encoding.codec = "json";
         };
       };
     };
   };
 
-  # Loki 서버 (Nextflow 전용)
   services.loki = {
     enable = true;
     configuration = {
