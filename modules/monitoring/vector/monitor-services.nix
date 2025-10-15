@@ -65,7 +65,7 @@ in {
           type = "file";
           inputs = ["parse_nextflow"];
           path = "/var/log/nextflow/weblog-%Y-%m-%d.log";
-          encoding.codec = "ndjson";
+          encoding.codec = "json";
         };
       };
     };
