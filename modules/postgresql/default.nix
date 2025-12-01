@@ -1,0 +1,102 @@
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
+  services.postgresql = {
+    enable = true;
+    package = pkgs.postgresql_17;
+
+    settings = {
+      listen_addresses = lib.mkForce config.networking.sbee.currentHost.wg-mgnt;
+      port = 5432;
+
+      wal_level = "replica";
+      max_wal_senders = 3;
+      wal_keep_size = "1GB";
+    };
+
+    ensureDatabases = ["terraform"];
+    ensureUsers = [
+      {
+        name = "terraform";
+        ensureDBOwnership = true;
+      }
+      {
+        name = "replicator";
+        ensureClauses = {
+          login = true;
+          replication = true;
+        };
+      }
+    ];
+
+    identMap = lib.pipe config.users.users [
+      (lib.filterAttrs (_: u: lib.elem "wheel" (u.extraGroups or [])))
+      lib.attrNames
+      (map (user: "tf_map ${user} terraform"))
+      (lib.concatStringsSep "\n")
+    ];
+
+    authentication = ''
+      local terraform terraform peer map=tf_map
+
+      host replication replicator ${config.networking.sbee.hosts.tau.wg-mgnt}/32 scram-sha-256
+
+      # Terraform backend access from wg-mgnt network
+      host terraform terraform 10.100.0.0/24 scram-sha-256
+    '';
+  };
+
+  services.postgresqlBackup = {
+    enable = true;
+    databases = ["terraform"];
+    compression = "zstd";
+    compressionLevel = 3;
+    startAt = "*-*-* 02:00:00";
+    location = "/var/backup/postgresql";
+  };
+
+  sops.secrets.pg-replicator-password = {
+    owner = "postgres";
+    group = "postgres";
+  };
+  sops.secrets.pg-terraform-password = {
+    owner = "postgres";
+    group = "postgres";
+  };
+
+  systemd.services.postgresql.postStart = let
+    psql = "${config.services.postgresql.package}/bin/psql --port=${toString config.services.postgresql.settings.port}";
+    terraformModules = ["cloudflare" "github" "vultr"];
+  in
+    lib.mkAfter ''
+      REPLICATOR_PW=$(cat ${config.sops.secrets.pg-replicator-password.path})
+      TERRAFORM_PW=$(cat ${config.sops.secrets.pg-terraform-password.path})
+
+      ${psql} -tAc "ALTER USER replicator WITH PASSWORD '$REPLICATOR_PW'" -d postgres
+      ${psql} -tAc "ALTER USER terraform WITH PASSWORD '$TERRAFORM_PW'" -d postgres
+
+      # Terraform backend 스키마 및 테이블 초기화
+      ${lib.concatMapStringsSep "\n" (mod: ''
+          ${psql} -d terraform <<SQL
+            CREATE SCHEMA IF NOT EXISTS ${mod} AUTHORIZATION terraform;
+            CREATE SEQUENCE IF NOT EXISTS ${mod}.global_states_id_seq OWNED BY NONE;
+            ALTER SEQUENCE ${mod}.global_states_id_seq OWNER TO terraform;
+            CREATE TABLE IF NOT EXISTS ${mod}.states (
+              id bigint NOT NULL DEFAULT nextval('${mod}.global_states_id_seq') PRIMARY KEY,
+              name text UNIQUE,
+              data text
+            );
+            ALTER TABLE ${mod}.states OWNER TO terraform;
+            CREATE TABLE IF NOT EXISTS ${mod}.locks (
+              id text PRIMARY KEY,
+              info text
+            );
+            ALTER TABLE ${mod}.locks OWNER TO terraform;
+          SQL
+        '')
+        terraformModules}
+    '';
+}

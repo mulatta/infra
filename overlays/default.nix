@@ -7,7 +7,7 @@
       config.allowUnfree = true;
     };
   in {
-    inherit (unstable) ntfy-sh somo;
+    inherit (unstable) ntfy-sh somo opentofu;
     inherit unstable;
   })
 ]

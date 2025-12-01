@@ -4,35 +4,29 @@
     config,
     pkgs,
     ...
-  }: let
-    minio-provider = pkgs.terraform_1.plugins.mkProvider rec {
-      version = "3.6.5";
-      owner = "aminueza";
-      repo = "terraform-provider-minio";
-      rev = "v${version}";
-      hash = "sha256-+I1nTNxLVny0pgdMF7vXPC3WxkInSXnbeHcqgrWG55s=";
-      provider-source-address = "registry.terraform.io/aminueza/minio";
-      vendorHash = "sha256-QWBzQXx/dzWZr9dn3LHy8RIvZL1EA9xYqi7Ppzvju7g=";
-      spdx = "AGPL-3.0-or-later";
-    };
-  in {
+  }: {
     devShells.terraform = pkgs.mkShellNoCC {
       packages = [
         pkgs.sops
         pkgs.terragrunt
+        pkgs.postgresql_17
         config.packages.terraform
       ];
+
+      PGHOST = "localhost";
+      PGPORT = "15432";
+      PGUSER = "terraform";
+      PGDATABASE = "terraform";
     };
     packages = {
       terraform = pkgs.opentofu.withPlugins (p: [
-        p.github
-        p.vultr
-        p.external
-        p.sops
-        p.local
-        p.null
-        p.cloudflare
-        minio-provider
+        p.integrations_github
+        p.vultr_vultr
+        p.hashicorp_external
+        p.carlpett_sops
+        p.hashicorp_local
+        p.hashicorp_null
+        p.cloudflare_cloudflare
       ]);
     };
   };

@@ -4,6 +4,7 @@
     ../modules/disko/xfs-root.nix
     ../modules/disko/xfs-mdadm.nix
     ../modules/wake-on-lan.nix
+    ../modules/postgresql/backup.nix
   ];
 
   disko.rootDisk = "/dev/disk/by-id/nvme-eui.00000000000000006479a79cdac0038f";
