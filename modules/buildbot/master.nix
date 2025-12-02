@@ -35,12 +35,18 @@ in {
       {
         name = "Push to Attic";
         environment = {
-          ATTIC_TOKEN = "%(secret:attic-token)s";
+          ATTIC_TOKEN = {
+            _type = "interpolate";
+            value = "%(secret:attic-token)s";
+          };
         };
         command = [
           "sh"
           "-c"
-          "attic login sbee https://cache.sjanglab.org $ATTIC_TOKEN && attic push sbee:infra result-%(prop:attr)s"
+          {
+            _type = "interpolate";
+            value = "attic login sbee https://cache.sjanglab.org $ATTIC_TOKEN && attic push sbee:infra result-%(prop:attr)s";
+          }
         ];
         warnOnly = true;
       }
