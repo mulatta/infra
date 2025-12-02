@@ -2,6 +2,7 @@
 {
   config,
   inputs,
+  pkgs,
   ...
 }: let
   inherit (config.networking.sbee) hosts;
@@ -13,6 +14,9 @@ in {
     workerPasswordFile = config.sops.secrets.buildbot-worker-password.path;
     masterUrl = "tcp:host=${hosts.psi.wg-serv}:port=9989";
   };
+
+  # Add attic-client to worker PATH for postBuildSteps
+  systemd.services.buildbot-worker.path = [pkgs.attic-client];
 
   sops.secrets.buildbot-worker-password = {
     sopsFile = ./secrets.yaml;
