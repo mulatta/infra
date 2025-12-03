@@ -32,6 +32,9 @@
 
       settings.formatter = let
         nixExcludes = [
+          "*.lock"
+          "*/secrets.yaml"
+          "hosts/**.yaml"
           "modules/users/admins.nix"
           "modules/users/researchers.nix"
           "modules/users/students.nix"

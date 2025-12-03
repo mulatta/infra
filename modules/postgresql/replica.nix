@@ -24,17 +24,10 @@ in {
     };
   };
 
-  # Ensure data directory exists with correct permissions before service runs
-  systemd.tmpfiles.rules = [
-    "d /var/lib/postgresql 0750 postgres postgres -"
-    "d ${pgDataDir} 0700 postgres postgres -"
-  ];
-
   # Initialize replica from primary before PostgreSQL starts
-  # This runs pg_basebackup on first boot, then maintains standby.signal
   systemd.services.postgresql-replica-init = {
     description = "Initialize PostgreSQL streaming replica";
-    after = ["network-online.target" "systemd-tmpfiles-setup.service"];
+    after = ["network-online.target" "sops-install-secrets.service"];
     wants = ["network-online.target"];
     wantedBy = ["postgresql.service"];
     before = ["postgresql.service"];
@@ -50,39 +43,35 @@ in {
     };
 
     script = ''
-      set -euo pipefail
-      PGDATA="${pgDataDir}"
-      PASSWORD_FILE="${config.sops.secrets.pg-replicator-password.path}"
+            set -euo pipefail
+            PGDATA="${pgDataDir}"
+            PASSWORD_FILE="${config.sops.secrets.pg-replicator-password.path}"
 
-      # Initialize from primary if not already done
-      if [ ! -f "$PGDATA/PG_VERSION" ]; then
-        echo "Initializing replica from primary ${primaryHost}..."
-        export PGPASSFILE="$PGDATA/.pgpass"
-        echo "${primaryHost}:5432:replication:replicator:$(cat $PASSWORD_FILE)" > "$PGPASSFILE"
-        chmod 600 "$PGPASSFILE"
+            # Already initialized - just update connection info
+            if [ -f "$PGDATA/PG_VERSION" ]; then
+              echo "Replica already initialized, updating primary_conninfo..."
+            else
+              # Clean and initialize from primary
+              rm -rf "$PGDATA"
+              echo "Initializing replica from primary ${primaryHost}..."
 
-        pg_basebackup \
-          -h ${primaryHost} \
-          -p 5432 \
-          -U replicator \
-          -D "$PGDATA" \
-          -Fp -Xs -P -R
+              PGPASSWORD=$(cat "$PASSWORD_FILE") pg_basebackup \
+                -h ${primaryHost} \
+                -p 5432 \
+                -U replicator \
+                -D "$PGDATA" \
+                -Fp -Xs -P -R
 
-        rm -f "$PGPASSFILE"
-        echo "Replica initialization complete."
-      fi
+              echo "Replica initialization complete."
+            fi
 
-      # Ensure standby.signal exists (marks this as a replica)
-      if [ ! -f "$PGDATA/standby.signal" ]; then
-        touch "$PGDATA/standby.signal"
-      fi
-
-      # Update primary_conninfo with current password
-      PASSWORD=$(cat "$PASSWORD_FILE")
-      cat > "$PGDATA/postgresql.auto.conf" << EOF
-      primary_conninfo = 'host=${primaryHost} port=5432 user=replicator password=$PASSWORD application_name=tau sslmode=prefer'
-      EOF
-      chmod 600 "$PGDATA/postgresql.auto.conf"
+            # Update primary_conninfo with current password
+            PASSWORD=$(cat "$PASSWORD_FILE")
+            cat > "$PGDATA/postgresql.auto.conf" << 'CONF'
+      primary_conninfo = 'host=${primaryHost} port=5432 user=replicator password=PASSWORD_PLACEHOLDER application_name=tau sslmode=prefer'
+      CONF
+            sed -i "s/PASSWORD_PLACEHOLDER/$PASSWORD/" "$PGDATA/postgresql.auto.conf"
+            chmod 600 "$PGDATA/postgresql.auto.conf"
     '';
   };
 
