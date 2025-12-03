@@ -219,8 +219,7 @@ def generate_ssh_cert(c: Any, host: str) -> None:
         c.run(
             f"sops --extract '[\"ssh-ca\"]' -d {ROOT}/modules/sshd/ca-keys.yaml > {tmpdir}/ssh-ca"
         )
-        # .dse.in.tum.de is legacy, remove soon
-        valid_hostnames = f"{h}.r,{h}.dse.in.tum.de,{h}.dos.cit.tum.de,{h}.thalheim.io"
+        valid_hostnames = f"{h},{h}.r,{h}.l"
         pubkey_path = f"{tmpdir}/etc/ssh/ssh_host_ed25519_key.pub"
         c.run(f"ssh-keygen -h -s {tmpdir}/ssh-ca -n {valid_hostnames} -I {h} {pubkey_path}")
         signed_key_src = f"{tmpdir}/etc/ssh/ssh_host_ed25519_key-cert.pub"
@@ -285,7 +284,7 @@ def generate_wireguard_key(c: Any, hostname: str) -> None:
 @task
 def install_ssh_hostkeys(c: Any, machine: str, hostname: str) -> None:
     """
-    Install ssh host keys stored in sops files on a remote host, i.e. inv install-ssh-hostkeys --machine mickey --hostname mickey.dos.cit.tum.de
+    Install ssh host keys stored in sops files on a remote host, i.e. inv install-ssh-hostkeys --machine rho --hostname rho
     """
     with TemporaryDirectory() as tmpdir:
         decrypt_host_keys(c, machine, tmpdir)

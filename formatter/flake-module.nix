@@ -32,6 +32,7 @@
 
       settings.formatter = let
         nixExcludes = [
+          "modules/users/admins.nix"
           "modules/users/researchers.nix"
           "modules/users/students.nix"
         ];

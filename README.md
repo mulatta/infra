@@ -59,7 +59,7 @@ Available tasks:
   generate-ssh-cert        Generate ssh cert for host, i.e. inv generate-ssh-cert bill
   generate-wireguard-key   Generate wireguard private keys for a given hostname (wg-mgnt and wg-serv)
   install                  format disks and install nixos, i.e.: inv install --machine rho --hostname root@rho.sbee.lab
-  install-ssh-hostkeys     Install ssh host keys stored in sops files on a remote host, i.e. inv install-ssh-hostkeys --machine mickey --hostname mickey.dos.cit.tum.de
+  install-ssh-hostkeys     Install ssh host keys stored in sops files on a remote host, i.e. inv install-ssh-hostkeys --machine rho --hostname rho
   list-services            List services on a remote host, i.e. inv list-services --host rho --pattern nginx
   print-age-key            Scans for the host key via ssh an converts it to age, i.e. inv scan-age-keys --host <hostname>
   reboot                   reboot a remote host, i.e. inv reboot --host rho

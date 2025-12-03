@@ -11,7 +11,7 @@
         python3.pkgs.deploykit
         python3.pkgs.bcrypt
         attic-client
-        inputs.colmena.packages.${system}.colmena
+        inputs.deploy-rs.packages.${system}.deploy-rs
 
         # nix tools
         nixVersions.latest

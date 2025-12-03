@@ -6,7 +6,7 @@
   ...
 }: let
   inherit (config.networking.sbee) hosts;
-  colmena-pkg = inputs.colmena.packages.${pkgs.system}.colmena;
+  deploy-rs-pkg = inputs.deploy-rs.packages.${pkgs.system}.deploy-rs;
   sshPort = 10022;
 in {
   imports = [inputs.buildbot-nix.nixosModules.buildbot-worker];
@@ -17,15 +17,17 @@ in {
     masterUrl = "tcp:host=${hosts.psi.wg-serv}:port=9989";
   };
 
+  nix.settings.trusted-users = ["buildbot-worker"];
+
   systemd.services.buildbot-worker.path = [
     pkgs.attic-client
-    colmena-pkg
+    deploy-rs-pkg
   ];
 
-  # SSH client config for buildbot-worker
-  # Host key verification uses SSH CA (configured in modules/sshd)
+  # SSH client config for buildbot-worker deploy
+  # Only applies when buildbot-worker user SSHs to managed hosts
   programs.ssh.extraConfig = ''
-    Match User buildbot-worker
+    Match LocalUser buildbot-worker Host eta,rho,tau,psi
         IdentityFile /run/secrets/buildbot-deploy-key
         Port ${toString sshPort}
   '';

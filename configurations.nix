@@ -3,7 +3,7 @@
   inputs,
   ...
 }: let
-  inherit (inputs) nixpkgs disko sops-nix srvos colmena;
+  inherit (inputs) nixpkgs disko sops-nix srvos deploy-rs;
 
   system = "x86_64-linux";
 
@@ -84,23 +84,23 @@ in {
     eta = nixosSystem (commonModules ++ [./hosts/eta.nix]);
   };
 
-  flake.colmenaHive = colmena.lib.makeHive {
-    meta = {
-      nixpkgs = pkgs;
-      specialArgs = {inherit self inputs;};
-    };
+  flake.deploy = {
+    sshUser = "root";
+    user = "root";
+    remoteBuild = true;
+    magicRollback = true;
+    autoRollback = true;
 
-    defaults = {name, ...}: {
-      deployment = {
-        targetHost = name;
-        targetUser = "root";
-        buildOnTarget = true;
-      };
-    };
-
-    psi = {imports = computeModules ++ [./hosts/psi.nix];};
-    rho = {imports = commonModules ++ [./hosts/rho.nix];};
-    tau = {imports = commonModules ++ [./hosts/tau.nix];};
-    eta = {imports = commonModules ++ [./hosts/eta.nix];};
+    nodes =
+      nixpkgs.lib.mapAttrs (name: config: {
+        hostname = name;
+        sshOpts = ["-p" "10022"];
+        profiles.system.path = deploy-rs.lib.${system}.activate.nixos config;
+      })
+      self.nixosConfigurations;
   };
+
+  # deploy-rs checks
+  flake.checks.${system} =
+    deploy-rs.lib.${system}.deployChecks self.deploy;
 }

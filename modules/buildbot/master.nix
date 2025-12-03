@@ -51,12 +51,25 @@ in {
         warnOnly = true;
       }
       {
-        name = "Deploy to hosts";
+        name = "Deploy to host";
         command = [
-          "colmena"
-          "apply"
-          "--parallel"
-          "0" # unlimited parallelism for all 4 nodes
+          "sh"
+          "-c"
+          {
+            _type = "interpolate";
+            # Only deploy for nixos-* checks, extract host name and deploy
+            # attr format: "x86_64-linux.nixos-rho" -> host: "rho"
+            value = ''
+              ATTR="%(prop:attr)s"
+              if [[ "$ATTR" == *.nixos-* ]]; then
+                HOST="''${ATTR##*.nixos-}"
+                echo "Deploying to $HOST..."
+                deploy --skip-checks "github:%(prop:project)s/%(prop:revision)s#$HOST"
+              else
+                echo "Skipping deployment for non-nixos check: $ATTR"
+              fi
+            '';
+          }
         ];
         warnOnly = true; # don't fail the build if deployment fails
       }
