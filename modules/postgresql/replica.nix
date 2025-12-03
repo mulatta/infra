@@ -24,11 +24,17 @@ in {
     };
   };
 
+  # Ensure data directory exists with correct permissions before service runs
+  systemd.tmpfiles.rules = [
+    "d /var/lib/postgresql 0750 postgres postgres -"
+    "d ${pgDataDir} 0700 postgres postgres -"
+  ];
+
   # Initialize replica from primary before PostgreSQL starts
   # This runs pg_basebackup on first boot, then maintains standby.signal
   systemd.services.postgresql-replica-init = {
     description = "Initialize PostgreSQL streaming replica";
-    after = ["network-online.target"];
+    after = ["network-online.target" "systemd-tmpfiles-setup.service"];
     wants = ["network-online.target"];
     wantedBy = ["postgresql.service"];
     before = ["postgresql.service"];
@@ -47,12 +53,6 @@ in {
       set -euo pipefail
       PGDATA="${pgDataDir}"
       PASSWORD_FILE="${config.sops.secrets.pg-replicator-password.path}"
-
-      # Create data directory if needed
-      if [ ! -d "$PGDATA" ]; then
-        mkdir -p "$PGDATA"
-        chmod 700 "$PGDATA"
-      fi
 
       # Initialize from primary if not already done
       if [ ! -f "$PGDATA/PG_VERSION" ]; then
