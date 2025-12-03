@@ -71,7 +71,6 @@ in {
     };
   };
 
-  # Loki 서버 (Nextflow 전용)
   services.loki = {
     enable = true;
     configuration = {
