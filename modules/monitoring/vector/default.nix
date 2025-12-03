@@ -247,6 +247,4 @@ in {
     MemoryMax = "256M";
     CPUQuota = "30%";
   };
-
-  # networking.firewall.interfaces."wg-mgnt".allowedTCPPorts = [];
 }

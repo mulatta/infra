@@ -84,7 +84,6 @@ in {
     };
   };
 
-
   services.loki = {
     enable = true;
     configuration = {
