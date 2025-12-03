@@ -37,10 +37,6 @@
     disko.url = "github:nix-community/disko";
     flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    harmonia.inputs.flake-parts.follows = "flake-parts";
-    harmonia.inputs.nixpkgs.follows = "nixpkgs";
-    harmonia.inputs.treefmt-nix.follows = "treefmt-nix";
-    harmonia.url = "github:nix-community/harmonia/";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
     nix-index-database.url = "github:nix-community/nix-index-database";
     nixos-facter-modules.url = "github:numtide/nixos-facter-modules";

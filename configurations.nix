@@ -36,7 +36,6 @@
 
     disko.nixosModules.disko
     srvos.nixosModules.server
-    srvos.nixosModules.mixins-telegraf
     srvos.nixosModules.mixins-terminfo
     srvos.nixosModules.mixins-nix-experimental
 
