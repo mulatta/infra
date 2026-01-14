@@ -1,44 +1,36 @@
-{ inputs, ... }:
 {
-  perSystem =
-    {
-      pkgs,
-      system,
-      ...
-    }:
-    {
-      devShells.default = pkgs.mkShellNoCC {
-        buildInputs = with pkgs; [
-          # deploy tools
-          python3.pkgs.invoke
-          python3.pkgs.deploykit
-          python3.pkgs.bcrypt
-          inputs.deploy-rs.packages.${system}.deploy-rs
+  perSystem = {pkgs, ...}: {
+    devShells.default = pkgs.mkShellNoCC {
+      buildInputs = with pkgs; [
+        # deploy tools
+        python3.pkgs.invoke
+        python3.pkgs.deploykit
+        python3.pkgs.bcrypt
 
-          # nix tools
-          nixVersions.latest
-          nixos-rebuild
-          nixos-anywhere
+        # nix tools
+        nixVersions.latest
+        nixos-rebuild
+        nixos-anywhere
 
-          # basic tools
-          gitMinimal
-          coreutils
-          findutils
-          rsync
-          yq-go
-          fd
+        # basic tools
+        gitMinimal
+        coreutils
+        findutils
+        rsync
+        yq-go
+        fd
 
-          # secret tools
-          openssh
-          sops
-          ssh-to-age
-          age
-          mkpasswd
+        # secret tools
+        openssh
+        sops
+        ssh-to-age
+        age
+        mkpasswd
 
-          # network tools
-          dnsmasq
-          wireguard-tools
-        ];
-      };
+        # network tools
+        dnsmasq
+        wireguard-tools
+      ];
     };
+  };
 }

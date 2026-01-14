@@ -1,8 +1,7 @@
 {
   description = "SBEE laboratory infrastructures flake";
-  outputs =
-    inputs@{ flake-parts, ... }:
-    flake-parts.lib.mkFlake { inherit inputs; } {
+  outputs = inputs @ {flake-parts, ...}:
+    flake-parts.lib.mkFlake {inherit inputs;} {
       systems = import inputs.systems;
       imports = [
         ./configurations.nix
@@ -13,15 +12,13 @@
         ./shells/flake-module.nix
         ./terraform/flake-module.nix
       ];
-      perSystem =
-        { system, ... }:
-        {
-          _module.args.pkgs = import inputs.nixpkgs {
-            inherit system;
-            config.allowUnfree = true;
-            overlays = import ./overlays { inherit inputs; };
-          };
+      perSystem = {system, ...}: {
+        _module.args.pkgs = import inputs.nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+          overlays = import ./overlays {inherit inputs;};
         };
+      };
     };
 
   inputs = {
@@ -30,8 +27,6 @@
     attic.inputs.nixpkgs.follows = "nixpkgs";
     attic.url = "github:zhaofengli/attic";
     buildbot-nix.url = "github:nix-community/buildbot-nix";
-    deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
-    deploy-rs.url = "github:serokell/deploy-rs";
     disko.inputs.nixpkgs.follows = "nixpkgs";
     disko.url = "github:nix-community/disko";
     flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";

@@ -10,15 +10,10 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   seungwonKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINkKJdIzvxlWcry+brNiCGLBNkxrMxFDyo1anE4xRNkL"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN48qMQAJGeDA+qs1o6T2+p9WyyYnyE1366IB6zzvmSD"
-  ];
-
-  buildbotDeployKey = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEcKzpOA5ITGQgJxA2GirIqlB4vuY8ZBngC1zobfOpTT buildbot-worker@psi"
   ];
 
   # ADD YOUR SSH PUBLIC KEY FOR SERVER CONNECTION
@@ -32,12 +27,11 @@ let
     "admin"
     "input"
   ];
-in
-{
+in {
   users.users = {
     root = {
       hashedPasswordFile = lib.mkIf config.users.withSops config.sops.secrets.root-password-hash.path;
-      openssh.authorizedKeys.keys = seungwonKeys ++ buildbotDeployKey;
+      openssh.authorizedKeys.keys = seungwonKeys;
     };
 
     # Seungwon Lee
