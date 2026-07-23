@@ -72,6 +72,12 @@
     };
 
     # Applications.
+    rag-nix = {
+      url = "github:mulatta/rag.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.treefmt-nix.follows = "treefmt-nix";
+    };
+
     multievolve-nix = {
       url = "github:SBEE-Lab/multievolve-nix";
       inputs.nixpkgs.follows = "nixpkgs";
